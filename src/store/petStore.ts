@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import { v4 as uuidv4 } from 'uuid'
+import { createPet, listPets, patchPet, removePet } from '../services/petsApi'
 
-export type Species = 'Perro' | 'Gato' | 'Otro'
+export type Species = string
 export type MedicalStatus = 'SANO' | 'EN_TRATAMIENTO' | 'NECESIDADES_ESPECIALES'
 export type AdoptionStatus = 'DISPONIBLE' | 'EN_PROCESO' | 'ADOPTADO'
 
@@ -11,7 +11,7 @@ export interface Pet {
   breed: string
   age: string
   weight: string
-  species: Species
+  species: string
   medicalStatus: MedicalStatus
   medicalNotes: string
   adoptionStatus: AdoptionStatus
@@ -22,81 +22,74 @@ export interface Pet {
 
 interface PetState {
   pets: Pet[]
-  addPet: (pet: Omit<Pet, 'id'>) => void
-  updatePet: (id: string, updatedData: Partial<Pet>) => void
+  isLoading: boolean
+  error: string | null
+  loadPets: () => Promise<void>
+  addPet: (pet: Omit<Pet, 'id'>) => Promise<Pet>
+  updatePet: (id: string, updatedData: Partial<Pet>) => Promise<Pet>
   updateAdoptionStatus: (
     id: string,
     status: AdoptionStatus,
     adopterData?: Partial<Pick<Pet, 'adopterName' | 'adopterPhone' | 'adopterAddress'>>,
-  ) => void
-  deletePet: (id: string) => void
+  ) => Promise<Pet>
+  deletePet: (id: string) => Promise<void>
 }
 
-const initialPets: Pet[] = [
-  {
-    id: uuidv4(),
-    name: 'Firulais',
-    breed: 'Labrador',
-    age: '3',
-    weight: '20kg',
-    species: 'Perro',
-    medicalStatus: 'SANO',
-    medicalNotes: 'Vacunado y desparasitado',
-    adoptionStatus: 'DISPONIBLE',
-  },
-  {
-    id: uuidv4(),
-    name: 'Michi',
-    breed: 'Siamés',
-    age: '2',
-    weight: '4kg',
-    species: 'Gato',
-    medicalStatus: 'EN_TRATAMIENTO',
-    medicalNotes: 'Tratamiento por dermatitis en curso',
-    adoptionStatus: 'EN_PROCESO',
-  },
-]
-
 export const usePetStore = create<PetState>((set) => ({
-  pets: initialPets,
+  pets: [],
+  isLoading: false,
+  error: null,
 
-  addPet: (pet) =>
+  loadPets: async () => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const pets = await listPets()
+      set({ pets, isLoading: false })
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'No se pudieron cargar las mascotas',
+        isLoading: false,
+      })
+      throw error
+    }
+  },
+
+  addPet: async (pet) => {
+    const createdPet = await createPet(pet)
+
     set((state) => ({
-      pets: [
-        ...state.pets,
-        {
-          ...pet,
-          id: uuidv4(),
-        },
-      ],
-    })),
+      pets: [...state.pets, createdPet],
+    }))
 
-  updatePet: (id, updatedData) =>
+    return createdPet
+  },
+
+  updatePet: async (id, updatedData) => {
+    const updatedPet = await patchPet(id, updatedData)
+
     set((state) => ({
-      pets: state.pets.map((p) => (p.id === id ? { ...p, ...updatedData, id: p.id } : p)),
-    })),
+      pets: state.pets.map((pet) => (pet.id === id ? updatedPet : pet)),
+    }))
 
-  updateAdoptionStatus: (id, status, adopterData) =>
+    return updatedPet
+  },
+
+  updateAdoptionStatus: async (id, status, adopterData) => {
+    const updatedPet = await patchPet(id, {
+      adoptionStatus: status,
+      ...(adopterData ?? {}),
+    })
+
     set((state) => ({
-      pets: state.pets.map((p) => {
-        if (p.id !== id) return p
+      pets: state.pets.map((pet) => (pet.id === id ? updatedPet : pet)),
+    }))
 
-        const updated: Pet = { ...p, adoptionStatus: status }
+    return updatedPet
+  },
 
-        if (status === 'ADOPTADO' && adopterData) {
-          updated.adopterName = adopterData.adopterName ?? updated.adopterName
-          updated.adopterPhone = adopterData.adopterPhone ?? updated.adopterPhone
-          updated.adopterAddress = adopterData.adopterAddress ?? updated.adopterAddress
-        } else if (status !== 'ADOPTADO') {
-          // clear adopter info if not adopted
-          delete updated.adopterName
-          delete updated.adopterPhone
-          delete updated.adopterAddress
-        }
-
-        return updated
-      }),
-    })),
-
-  deletePet: (id) => set((state) => ({ pets: state.pets.filter((p) => p.id !== id) })),
+  deletePet: async (id) => {
+    await removePet(id)
+    set((state) => ({ pets: state.pets.filter((pet) => pet.id !== id) }))
+  },
 }))

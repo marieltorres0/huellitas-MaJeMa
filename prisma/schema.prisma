@@ -1,0 +1,74 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MedicalStatus {
+  SANO
+  EN_TRATAMIENTO
+  NECESIDADES_ESPECIALES
+}
+
+enum AdoptionStatus {
+  DISPONIBLE
+  EN_PROCESO
+  ADOPTADO
+}
+
+enum Role {
+  admin
+  normal
+}
+
+// --------------------------------------------------
+// TABLAS (Basadas en tus interfaces)
+// --------------------------------------------------
+
+// Basado en tu interface Pet
+model Pet {
+  id             String         @id @default(uuid())
+  name           String
+  breed          String
+  age            String
+  weight         String
+  species        String
+  medicalStatus  MedicalStatus
+  medicalNotes   String
+  adoptionStatus AdoptionStatus @default(DISPONIBLE)
+  
+  // Datos del Adoptante (opcionales, se llenan cuando pasa a EN_PROCESO)
+  adopterName    String?
+  adopterPhone   String?
+  adopterAddress String?
+
+  // Buenas prácticas de bases de datos
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+// Basado en tu interface User (Auth)
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      Role     @default(normal)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Basado en tu interface SettingsProfile
+model ShelterProfile {
+  id        Int      @id @default(1) // Solo habrá 1 registro en esta tabla
+  nombre    String
+  telefono  String
+  direccion String
+  
+  updatedAt DateTime @updatedAt
+}

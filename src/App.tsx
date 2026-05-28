@@ -9,6 +9,7 @@ import AddPet from './pages/AddPet'
 import EditPet from './pages/EditPet'
 import Settings from './pages/Settings'
 import { useAuthStore } from './store/authStore'
+import { usePetStore } from './store/petStore'
 import { useSettingsStore } from './store/useSettingsStore'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -25,10 +26,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
 	const isDarkMode = useSettingsStore((state) => state.isDarkMode)
+	const loadPets = usePetStore((state) => state.loadPets)
 
 	useEffect(() => {
 		document.documentElement.classList.toggle('dark', isDarkMode)
 	}, [isDarkMode])
+
+	useEffect(() => {
+		void loadPets().catch(() => undefined)
+	}, [loadPets])
 
 	return (
 		<BrowserRouter>

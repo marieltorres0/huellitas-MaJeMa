@@ -6,6 +6,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { usePetStore } from '../store/petStore'
 import { useAuthStore } from '../store/authStore'
+import { useSettingsStore } from '../store/useSettingsStore'
+import { DEFAULT_SPECIES_OPTIONS, mergeSpeciesOptions } from '../utils/speciesOptions'
+import { getBreedOptionsForSpecies } from '../utils/breedOptions'
 
 const editPetSchema = z
   .object({
@@ -13,7 +16,7 @@ const editPetSchema = z
     breed: z.string().min(1, 'Raza es obligatoria'),
     age: z.string().min(1, 'Edad es obligatoria'),
     weight: z.string().min(1, 'Peso es obligatorio'),
-    species: z.enum(['Perro', 'Gato', 'Otro'] as const),
+    species: z.string().min(1, 'Especie es obligatoria'),
     medicalStatus: z.enum(['SANO', 'EN_TRATAMIENTO', 'NECESIDADES_ESPECIALES'] as const),
     medicalNotes: z.string().min(1, 'Notas médicas son obligatorias'),
     adoptionStatus: z.enum(['DISPONIBLE', 'EN_PROCESO', 'ADOPTADO'] as const),
@@ -56,15 +59,21 @@ export default function EditPet() {
   const pets = usePetStore((s) => s.pets)
   const updatePet = usePetStore((s) => s.updatePet)
   const user = useAuthStore((s) => s.user)
+  const speciesOptions = useSettingsStore((s) => s.speciesOptions)
 
   const pet = pets.find((p) => p.id === id)
   const isNormal = user?.role === 'normal'
+  const speciesChoices = mergeSpeciesOptions(
+    speciesOptions.length > 0 ? speciesOptions : [...DEFAULT_SPECIES_OPTIONS],
+    pet?.species,
+  )
 
   const {
     register,
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<EditPetForm>({
     resolver: zodResolver(editPetSchema),
@@ -101,27 +110,41 @@ export default function EditPet() {
     })
   }, [pet, reset])
 
+  const currentSpecies = watch('species')
+  const currentBreed = watch('breed')
+  const breedChoices = getBreedOptionsForSpecies(currentSpecies)
+
+  useEffect(() => {
+    if (!currentBreed || !breedChoices.some((breed) => breed === currentBreed)) {
+      setValue('breed', breedChoices[0] ?? 'Mestizo', { shouldValidate: true })
+    }
+  }, [breedChoices, currentBreed, setValue])
+
   const currentAdoptionStatus = watch('adoptionStatus')
 
-  const onSubmit = (data: EditPetForm) => {
+  const onSubmit = async (data: EditPetForm) => {
     if (!id) return
 
-    updatePet(id, {
-      name: data.name,
-      breed: data.breed,
-      age: data.age,
-      weight: data.weight,
-      species: data.species,
-      medicalStatus: data.medicalStatus,
-      medicalNotes: data.medicalNotes,
-      adoptionStatus: data.adoptionStatus,
-      adopterName: data.adoptionStatus === 'ADOPTADO' ? data.adopterName : undefined,
-      adopterPhone: data.adoptionStatus === 'ADOPTADO' ? data.adopterPhone : undefined,
-      adopterAddress: data.adoptionStatus === 'ADOPTADO' ? data.adopterAddress : undefined,
-    })
+    try {
+      await updatePet(id, {
+        name: data.name,
+        breed: data.breed,
+        age: data.age,
+        weight: data.weight,
+        species: data.species,
+        medicalStatus: data.medicalStatus,
+        medicalNotes: data.medicalNotes,
+        adoptionStatus: data.adoptionStatus,
+        adopterName: data.adoptionStatus === 'ADOPTADO' ? data.adopterName : undefined,
+        adopterPhone: data.adoptionStatus === 'ADOPTADO' ? data.adopterPhone : undefined,
+        adopterAddress: data.adoptionStatus === 'ADOPTADO' ? data.adopterAddress : undefined,
+      })
 
-    toast.success('Cambios guardados')
-    navigate('/dashboard')
+      toast.success('Cambios guardados')
+      navigate('/dashboard')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'No se pudieron guardar los cambios')
+    }
   }
 
   if (!pet) {
@@ -158,16 +181,6 @@ export default function EditPet() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Raza</label>
-              <input
-                {...register('breed')}
-                disabled={isNormal}
-                className="w-full rounded border border-slate-200 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
-              />
-              {errors.breed && <p className="mt-1 text-sm text-red-500">{errors.breed.message}</p>}
-            </div>
-
-            <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Edad</label>
               <input
                 {...register('age')}
@@ -194,10 +207,28 @@ export default function EditPet() {
                 disabled={isNormal}
                 className="w-full rounded border border-slate-200 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
               >
-                <option value="Perro">Perro</option>
-                <option value="Gato">Gato</option>
-                <option value="Otro">Otro</option>
+                {speciesChoices.map((species) => (
+                  <option key={species} value={species}>
+                    {species}
+                  </option>
+                ))}
               </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">Raza</label>
+              <select
+                {...register('breed')}
+                disabled={isNormal}
+                className="w-full rounded border border-slate-200 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
+              >
+                {breedChoices.map((breed) => (
+                  <option key={breed} value={breed}>
+                    {breed}
+                  </option>
+                ))}
+              </select>
+              {errors.breed && <p className="mt-1 text-sm text-red-500">{errors.breed.message}</p>}
             </div>
           </div>
         </section>

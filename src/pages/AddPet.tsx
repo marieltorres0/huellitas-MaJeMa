@@ -1,18 +1,22 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { usePetStore } from '../store/petStore'
+import { useSettingsStore } from '../store/useSettingsStore'
+import { DEFAULT_SPECIES_OPTIONS } from '../utils/speciesOptions'
+import { getBreedOptionsForSpecies } from '../utils/breedOptions'
 
 const addPetSchema = z.object({
   name: z.string().min(1, 'Nombre es obligatorio'),
   breed: z.string().min(1, 'Raza es obligatoria'),
   age: z.coerce.number().refine((v) => Number.isInteger(v) && v >= 0, { message: 'La edad debe ser un número entero (ej. 2)' }),
   weight: z.coerce.number().refine((v) => typeof v === 'number' && v > 0, { message: 'El peso debe ser un número válido (ej. 4.5)' }),
-  species: z.enum(['Perro', 'Gato', 'Otro'] as const),
+  species: z.string().min(1, 'Especie es obligatoria'),
   medicalStatus: z.enum(['SANO', 'EN_TRATAMIENTO', 'NECESIDADES_ESPECIALES'] as const).optional(),
-  medicalNotes: z.string().optional(),
+  medicalNotes: z.string().min(1, 'Notas médicas son obligatorias'),
 })
 
 type AddPetFormInput = z.input<typeof addPetSchema>
@@ -20,42 +24,60 @@ type AddPetFormOutput = z.output<typeof addPetSchema>
 
 export default function AddPet() {
   const addPet = usePetStore((s) => s.addPet)
+  const speciesOptions = useSettingsStore((s) => s.speciesOptions)
   const navigate = useNavigate()
+  const speciesChoices = speciesOptions.length > 0 ? speciesOptions : [...DEFAULT_SPECIES_OPTIONS]
 
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<AddPetFormInput, unknown, AddPetFormOutput>({
     resolver: zodResolver(addPetSchema),
     defaultValues: {
-      species: 'Perro',
+      species: speciesChoices[0] ?? 'Perro',
+      breed: getBreedOptionsForSpecies(speciesChoices[0] ?? 'Perro')[0] ?? 'Mestizo',
       medicalStatus: 'SANO',
       medicalNotes: '',
     },
   })
+
+  const selectedSpecies = watch('species')
+  const breedChoices = getBreedOptionsForSpecies(selectedSpecies)
+
+  useEffect(() => {
+    const currentBreed = watch('breed')
+    if (!currentBreed || !breedChoices.some((breed) => breed === currentBreed)) {
+      setValue('breed', breedChoices[0] ?? 'Mestizo', { shouldValidate: true })
+    }
+  }, [breedChoices, setValue, watch])
 
   const hasError = (field: keyof AddPetFormInput) => !!errors[field]
 
   const inputClass = (field: keyof AddPetFormInput) =>
     `w-full rounded border px-3 py-2 ${hasError(field) ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500' : 'border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'}`
 
-  const onSubmit = (data: AddPetFormOutput) => {
+  const onSubmit = async (data: AddPetFormOutput) => {
+    try {
+      const petToAdd = {
+        name: data.name,
+        breed: data.breed,
+        age: String(data.age),
+        weight: String(data.weight),
+        species: data.species,
+        medicalStatus: data.medicalStatus ?? 'SANO',
+        medicalNotes: data.medicalNotes,
+        adoptionStatus: 'DISPONIBLE' as const,
+      }
 
-    const petToAdd = {
-      name: data.name,
-      breed: data.breed,
-      age: String(data.age),
-      weight: String(data.weight),
-      species: data.species,
-      medicalStatus: data.medicalStatus ?? 'SANO',
-      medicalNotes: data.medicalNotes ?? '',
-      adoptionStatus: 'DISPONIBLE' as const,
+      await addPet(petToAdd)
+      toast.success('Mascota registrada')
+      navigate('/dashboard')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'No se pudo registrar la mascota')
     }
-
-    addPet(petToAdd)
-    toast.success('Mascota registrada')
-    navigate('/dashboard')
   }
 
   return (
@@ -74,12 +96,6 @@ export default function AddPet() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Raza</label>
-              <input {...register('breed')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400" />
-              {errors.breed && <p className="mt-1 text-sm text-red-500">{errors.breed.message}</p>}
-            </div>
-
-            <div>
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Edad</label>
               <input placeholder="2" type="number" step="1" min="0" {...register('age')} className={`${inputClass('age')} bg-white dark:bg-gray-950 dark:text-gray-100 dark:border-blue-800 dark:focus:border-blue-400 dark:focus:ring-blue-400`} />
               {errors.age && <p className="mt-1 text-sm text-red-500">{errors.age.message}</p>}
@@ -94,10 +110,24 @@ export default function AddPet() {
             <div className="sm:col-span-2">
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Especie</label>
               <select {...register('species')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400">
-                <option value="Perro">Perro</option>
-                <option value="Gato">Gato</option>
-                <option value="Otro">Otro</option>
+                {speciesChoices.map((species) => (
+                  <option key={species} value={species}>
+                    {species}
+                  </option>
+                ))}
               </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Raza</label>
+              <select {...register('breed')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400">
+                {breedChoices.map((breed) => (
+                  <option key={breed} value={breed}>
+                    {breed}
+                  </option>
+                ))}
+              </select>
+              {errors.breed && <p className="mt-1 text-sm text-red-500">{errors.breed.message}</p>}
             </div>
           </div>
         </section>
@@ -118,6 +148,7 @@ export default function AddPet() {
             <div className="sm:col-span-2">
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Notas Médicas</label>
               <textarea {...register('medicalNotes')} rows={4} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"></textarea>
+              {errors.medicalNotes && <p className="mt-1 text-sm text-red-500">{errors.medicalNotes.message}</p>}
             </div>
           </div>
         </section>

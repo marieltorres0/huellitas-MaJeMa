@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,6 +6,9 @@ import { z } from 'zod'
 import { toast } from 'react-toastify'
 import { useAuthStore } from '../store/authStore'
 import { type Pet, usePetStore } from '../store/petStore'
+import { useSettingsStore } from '../store/useSettingsStore'
+import { DEFAULT_SPECIES_OPTIONS, mergeSpeciesOptions } from '../utils/speciesOptions'
+import { getBreedOptionsForSpecies, mergeBreedOptions } from '../utils/breedOptions'
 
 const adoptionStatuses = ['DISPONIBLE', 'EN_PROCESO', 'ADOPTADO'] as const
 type AdoptionStatus = (typeof adoptionStatuses)[number]
@@ -32,7 +35,7 @@ const adopterFieldsSchema = z
     adopterAddress: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.adoptionStatus === 'EN_PROCESO') {
+    if (data.adoptionStatus === 'EN_PROCESO' || data.adoptionStatus === 'ADOPTADO') {
       if (!data.adopterName?.trim()) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -69,7 +72,7 @@ const adminModalSchema = z
       .int('La edad debe ser un número entero (ej. 2)')
       .min(0, 'La edad debe ser un número entero (ej. 2)'),
     weight: z.coerce.number().gt(0, 'El peso debe ser un número válido (ej. 4.5)'),
-    species: z.enum(['Perro', 'Gato', 'Otro'] as const),
+    species: z.string().min(1, 'Especie es obligatoria'),
     medicalStatus: z.enum(['SANO', 'EN_TRATAMIENTO', 'NECESIDADES_ESPECIALES'] as const),
     medicalNotes: z.string().min(1, 'Las notas médicas son obligatorias'),
   })
@@ -114,6 +117,16 @@ function normalizeText(value?: string) {
   return trimmed ? trimmed : undefined
 }
 
+function hasCompleteAdopterData(pet: Pet | null | undefined) {
+  if (!pet) return false
+
+  return (
+    Boolean(pet.adopterName?.trim()) &&
+    /^\d{10}$/.test(pet.adopterPhone ?? '') &&
+    (pet.adopterAddress ?? '').trim().length >= 10
+  )
+}
+
 function buildCertificateFileName(petName: string) {
   const safePetName = petName
     .trim()
@@ -136,6 +149,7 @@ export default function Dashboard() {
   const pets = usePetStore((state) => state.pets)
   const updatePet = usePetStore((state) => state.updatePet)
   const deletePet = usePetStore((state) => state.deletePet)
+  const speciesOptions = useSettingsStore((state) => state.speciesOptions)
   const user = useAuthStore((state) => state.user)
   const isNormalUser = user?.role === 'normal'
 
@@ -159,6 +173,7 @@ export default function Dashboard() {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<any>({
     resolver: zodResolver(modalSchema) as any,
@@ -176,6 +191,21 @@ export default function Dashboard() {
   })
 
   const adoptionStatus = (watch('adoptionStatus') as AdoptionStatus) ?? 'DISPONIBLE'
+  const currentSpecies = watch('species') as string
+  const currentBreed = watch('breed') as string
+  const breedChoices = currentSpecies === selectedPet?.species
+    ? mergeBreedOptions(getBreedOptionsForSpecies(currentSpecies), currentBreed)
+    : getBreedOptionsForSpecies(currentSpecies)
+  const speciesChoices = mergeSpeciesOptions(
+    speciesOptions.length > 0 ? speciesOptions : [...DEFAULT_SPECIES_OPTIONS],
+    selectedPet?.species,
+  )
+
+  useEffect(() => {
+    if (!currentBreed || !breedChoices.some((breed) => breed === currentBreed)) {
+      setValue('breed', breedChoices[0] ?? 'Mestizo', { shouldValidate: true })
+    }
+  }, [breedChoices, currentBreed, setValue])
 
   const inputClass = (hasError?: boolean) =>
     `w-full rounded-lg border px-3 py-2 ${
@@ -184,12 +214,12 @@ export default function Dashboard() {
         : 'border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'
     }`
 
+  const selectClass = (hasError?: boolean) =>
+    `${inputClass(hasError)} bg-white text-slate-900 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400`
+
   const errorText = (field: string) => String(errors?.[field]?.message ?? '')
 
-  const hasValidAdopterData =
-    Boolean(draggedPet?.adopterName?.trim()) &&
-    /^\d{10}$/.test(draggedPet?.adopterPhone ?? '') &&
-    (draggedPet?.adopterAddress ?? '').trim().length >= 10
+  const hasValidAdopterData = hasCompleteAdopterData(draggedPet)
 
   const canDropIntoAdopted =
     Boolean(draggedPet) &&
@@ -303,6 +333,18 @@ export default function Dashboard() {
     setPendingConfirmData(null)
   }
 
+  const openAdoptionConfirm = (pet: Pet) => {
+    if (!hasCompleteAdopterData(pet)) {
+      toast.error('Completa nombre, teléfono y dirección del adoptante antes de marcarla como adoptada.')
+      return false
+    }
+
+    setSelectedPet(pet)
+    setPendingConfirmData(getPetFormValues(pet, 'ADOPTADO'))
+    setIsConfirmModalOpen(true)
+    return true
+  }
+
   const onDragStart = (start: { draggableId: string }) => {
     const pet = pets.find((item) => item.id === start.draggableId)
     setDraggedPet(pet ?? null)
@@ -317,19 +359,23 @@ export default function Dashboard() {
     setPetToDelete(pet)
   }
 
-  const confirmDeletePet = () => {
+  const confirmDeletePet = async () => {
     if (!petToDelete || petToDelete.adoptionStatus !== 'ADOPTADO') {
       closeDeleteModal()
       toast.error('Solo se pueden eliminar mascotas adoptadas')
       return
     }
 
-    deletePet(petToDelete.id)
-    closeDeleteModal()
-    toast.success('Mascota eliminada')
+    try {
+      await deletePet(petToDelete.id)
+      closeDeleteModal()
+      toast.success('Mascota eliminada')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'No se pudo eliminar la mascota')
+    }
   }
 
-  const commitPetUpdate = (pet: Pet, data: ModalFormValues, finalStatus: AdoptionStatus) => {
+  const commitPetUpdate = async (pet: Pet, data: ModalFormValues, finalStatus: AdoptionStatus) => {
     const adopterPayload =
       finalStatus === 'EN_PROCESO'
         ? {
@@ -344,7 +390,7 @@ export default function Dashboard() {
           }
 
     if (isNormalUser) {
-      updatePet(pet.id, {
+      await updatePet(pet.id, {
         adoptionStatus: finalStatus,
         adopterName: adopterPayload.adopterName,
         adopterPhone: adopterPayload.adopterPhone,
@@ -353,7 +399,7 @@ export default function Dashboard() {
       return
     }
 
-    updatePet(pet.id, {
+    await updatePet(pet.id, {
       name: data.name ?? pet.name,
       breed: data.breed ?? pet.breed,
       age: String(data.age ?? pet.age),
@@ -376,7 +422,7 @@ export default function Dashboard() {
     setIsEditModalOpen(true)
   }
 
-  const onSubmit = (data: ModalFormValues) => {
+  const onSubmit = async (data: ModalFormValues) => {
     if (!selectedPet) return
 
     if (data.adoptionStatus === 'ADOPTADO') {
@@ -385,18 +431,26 @@ export default function Dashboard() {
       return
     }
 
-    commitPetUpdate(selectedPet, data, data.adoptionStatus)
-    closeEditModal()
-    toast.success('Mascota actualizada')
+    try {
+      await commitPetUpdate(selectedPet, data, data.adoptionStatus)
+      closeEditModal()
+      toast.success('Mascota actualizada')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'No se pudo actualizar la mascota')
+    }
   }
 
-  const handleConfirmAdoption = () => {
+  const handleConfirmAdoption = async () => {
     if (!selectedPet) return
 
     const data = pendingConfirmData ?? getPetFormValues(selectedPet, 'ADOPTADO')
-    commitPetUpdate(selectedPet, data, 'ADOPTADO')
-    closeEditModal()
-    toast.success('Mascota actualizada')
+    try {
+      await commitPetUpdate(selectedPet, data, 'ADOPTADO')
+      closeEditModal()
+      toast.success('Mascota actualizada')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'No se pudo actualizar la mascota')
+    }
   }
 
   const onDragEnd = (result: DropResult) => {
@@ -413,42 +467,40 @@ export default function Dashboard() {
     const nextStatus = destination.droppableId as AdoptionStatus
 
     if (nextStatus === 'EN_PROCESO') {
+      // If adopter data already present, persist the status change immediately.
+      const hasAdopter = Boolean(pet.adopterName?.trim()) && /\d{10}/.test(pet.adopterPhone ?? '') && (pet.adopterAddress ?? '').trim().length >= 10
+      if (hasAdopter) {
+        void updatePet(pet.id, {
+          adoptionStatus: 'EN_PROCESO',
+          adopterName: pet.adopterName,
+          adopterPhone: pet.adopterPhone,
+          adopterAddress: pet.adopterAddress,
+        }).catch(() => toast.error('No se pudo actualizar la mascota'))
+        return
+      }
+
       openEditModal(pet, 'EN_PROCESO')
       return
     }
 
     if (nextStatus === 'ADOPTADO') {
-      const cameFromAvailable = source.droppableId === 'DISPONIBLE'
-      const missingAdopterData = !(
-        Boolean(pet.adopterName?.trim()) &&
-        /^\d{10}$/.test(pet.adopterPhone ?? '') &&
-        (pet.adopterAddress ?? '').trim().length >= 10
-      )
-
-      if (cameFromAvailable || missingAdopterData) {
-        toast.error('No se puede adoptar directamente. Primero debes mover la mascota a "En Proceso" para registrar los datos del adoptante.')
+      if (source.droppableId === 'DISPONIBLE') {
+        toast.error('Primero mueve la mascota a "En Proceso" y completa los datos del adoptante.')
         return
       }
 
-      if (source.droppableId === 'EN_PROCESO' || hasValidAdopterData) {
-        setSelectedPet(pet)
-        setPendingConfirmData(getPetFormValues(pet, 'ADOPTADO'))
-        setIsConfirmModalOpen(true)
+      if (!openAdoptionConfirm(pet)) {
         return
       }
-
-      setSelectedPet(pet)
-      setPendingConfirmData(getPetFormValues(pet, 'ADOPTADO'))
-      setIsConfirmModalOpen(true)
       return
     }
 
-    updatePet(pet.id, {
+    void updatePet(pet.id, {
       adoptionStatus: 'DISPONIBLE',
       adopterName: undefined,
       adopterPhone: undefined,
       adopterAddress: undefined,
-    })
+    }).catch(() => toast.error('No se pudo actualizar la mascota'))
   }
 
   const columns: Array<{ id: AdoptionStatus; title: string }> = [
@@ -463,6 +515,9 @@ export default function Dashboard() {
       event.target.value = digits
     },
   })
+  const showAdopterSection = adoptionStatus === 'EN_PROCESO' || adoptionStatus === 'ADOPTADO'
+  const showAdopterRequiredCopy = adoptionStatus === 'EN_PROCESO'
+  const isAdopterSectionReadOnly = adoptionStatus === 'ADOPTADO'
 
   return (
     <div>
@@ -588,12 +643,6 @@ export default function Dashboard() {
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Raza</label>
-                      <input {...register('breed')} className={inputClass(Boolean(errors.breed))} />
-                      {errors.breed && <p className="mt-1 text-sm text-red-500">{errorText('breed')}</p>}
-                    </div>
-
-                    <div>
                       <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Edad</label>
                       <input
                         type="number"
@@ -619,17 +668,31 @@ export default function Dashboard() {
 
                     <div>
                       <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Especie</label>
-                      <select {...register('species')} className={inputClass(Boolean(errors.species))}>
-                        <option value="Perro">Perro</option>
-                        <option value="Gato">Gato</option>
-                        <option value="Otro">Otro</option>
+                      <select {...register('species')} className={selectClass(Boolean(errors.species))}>
+                        {speciesChoices.map((species) => (
+                          <option key={species} value={species}>
+                            {species}
+                          </option>
+                        ))}
                       </select>
                       {errors.species && <p className="mt-1 text-sm text-red-500">{errorText('species')}</p>}
                     </div>
 
                     <div>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Raza</label>
+                      <select {...register('breed')} className={selectClass(Boolean(errors.breed))}>
+                        {breedChoices.map((breed) => (
+                          <option key={breed} value={breed}>
+                            {breed}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.breed && <p className="mt-1 text-sm text-red-500">{errorText('breed')}</p>}
+                    </div>
+
+                    <div>
                       <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Estado Médico</label>
-                      <select {...register('medicalStatus')} className={inputClass(Boolean(errors.medicalStatus))}>
+                      <select {...register('medicalStatus')} className={selectClass(Boolean(errors.medicalStatus))}>
                         <option value="SANO">SANO</option>
                         <option value="EN_TRATAMIENTO">EN_TRATAMIENTO</option>
                         <option value="NECESIDADES_ESPECIALES">NECESIDADES_ESPECIALES</option>
@@ -652,7 +715,7 @@ export default function Dashboard() {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Estado de adopción</label>
-                <select {...register('adoptionStatus')} className={inputClass(Boolean(errors.adoptionStatus))}>
+                <select {...register('adoptionStatus')} className={selectClass(Boolean(errors.adoptionStatus))}>
                   <option value="DISPONIBLE">DISPONIBLE</option>
                   <option value="EN_PROCESO">EN_PROCESO</option>
                   <option value="ADOPTADO">ADOPTADO</option>
@@ -660,30 +723,59 @@ export default function Dashboard() {
                 {errors.adoptionStatus && <p className="mt-1 text-sm text-red-500">{errorText('adoptionStatus')}</p>}
               </div>
 
-              {adoptionStatus === 'EN_PROCESO' && (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nombre del Adoptante</label>
-                    <input {...register('adopterName')} className={inputClass(Boolean(errors.adopterName))} />
-                    {errors.adopterName && <p className="mt-1 text-sm text-red-500">{errorText('adopterName')}</p>}
+              {showAdopterSection && (
+                <div className="rounded-md border border-blue-200 bg-blue-50/50 p-4 transition-shadow shadow-sm">
+                  <div className="mb-3 flex items-start gap-2">
+                    <div className="shrink-0 mt-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.5a.75.75 0 10-1.5 0v3.25c0 .414.336.75.75.75h1.5a.75.75 0 100-1.5H10V6.5z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-blue-800">
+                        Datos del adoptante{showAdopterRequiredCopy ? ' (requeridos)' : ''}
+                      </div>
+                      {showAdopterRequiredCopy && (
+                        <div className="mt-1 text-xs text-blue-700/80">
+                          Completa nombre, teléfono y dirección para confirmar el proceso de adopción.
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Teléfono</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={10}
-                      {...adopterPhoneField}
-                      className={inputClass(Boolean(errors.adopterPhone))}
-                    />
-                    {errors.adopterPhone && <p className="mt-1 text-sm text-red-500">{errorText('adopterPhone')}</p>}
-                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nombre del Adoptante</label>
+                      <input
+                        {...register('adopterName')}
+                        readOnly={isAdopterSectionReadOnly}
+                        className={`${inputClass(Boolean(errors.adopterName))} bg-transparent ${isAdopterSectionReadOnly ? 'cursor-not-allowed bg-blue-50/60 text-slate-700' : ''}`}
+                      />
+                      {errors.adopterName && <p className="mt-1 text-sm text-red-500">{errorText('adopterName')}</p>}
+                    </div>
 
-                  <div className="sm:col-span-2">
-                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Dirección</label>
-                    <input {...register('adopterAddress')} className={inputClass(Boolean(errors.adopterAddress))} />
-                    {errors.adopterAddress && <p className="mt-1 text-sm text-red-500">{errorText('adopterAddress')}</p>}
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Teléfono</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={10}
+                        {...adopterPhoneField}
+                        readOnly={isAdopterSectionReadOnly}
+                        className={`${inputClass(Boolean(errors.adopterPhone))} bg-transparent ${isAdopterSectionReadOnly ? 'cursor-not-allowed bg-blue-50/60 text-slate-700' : ''}`} 
+                      />
+                      {errors.adopterPhone && <p className="mt-1 text-sm text-red-500">{errorText('adopterPhone')}</p>}
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Dirección</label>
+                      <input
+                        {...register('adopterAddress')}
+                        readOnly={isAdopterSectionReadOnly}
+                        className={`${inputClass(Boolean(errors.adopterAddress))} bg-transparent ${isAdopterSectionReadOnly ? 'cursor-not-allowed bg-blue-50/60 text-slate-700' : ''}`}
+                      />
+                      {errors.adopterAddress && <p className="mt-1 text-sm text-red-500">{errorText('adopterAddress')}</p>}
+                    </div>
                   </div>
                 </div>
               )}
@@ -784,7 +876,7 @@ export default function Dashboard() {
 
       {showClinicalSheet && selectedPet && (
         <div className="fixed inset-0 z-80 flex items-center justify-center bg-black/50 p-4">
-          <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl transition-all duration-300 print:shadow-none print:p-0">
+          <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl transition-all duration-300 print:shadow-none print:p-0 flex flex-col">
             <div className="mb-4 flex items-center justify-between print:hidden">
               <h3 className="text-lg font-bold">Vista previa: Ficha Clínica — {selectedPet.name}</h3>
               <div className="flex items-center gap-2">
@@ -805,16 +897,16 @@ export default function Dashboard() {
                 </button>
               </div>
             </div>
-
-            <div
-              ref={clinicalSheetRef}
-              className="mx-auto w-[210mm] max-w-full rounded-lg p-8"
-              style={{ backgroundColor: '#fff9eb', color: '#1f2937' }}
-            >
+            <div className="overflow-auto max-h-[80vh] w-full">
               <div
-                className="flex h-full w-full flex-col rounded-sm border-8 border-double p-6 text-left"
-                style={{ borderColor: '#d97706', backgroundColor: '#fbf6ee', color: '#1f2937' }}
+                ref={clinicalSheetRef}
+                className="mx-auto w-full max-w-[210mm] rounded-lg p-8"
+                style={{ backgroundColor: '#fff9eb', color: '#1f2937' }}
               >
+                <div
+                  className="flex h-full w-full flex-col rounded-sm border-8 border-double p-6 text-left"
+                  style={{ borderColor: '#d97706', backgroundColor: '#fbf6ee', color: '#1f2937' }}
+                >
                 <div className="mb-6 rounded-xl border-2 px-5 py-4 text-center" style={{ borderColor: '#d1d5db', backgroundColor: '#fffaf0' }}>
                   <div className="text-xs uppercase tracking-[0.2em]" style={{ color: '#92400e' }}>Documento Oficial</div>
                   <h1 className="mt-2 text-xl font-bold">Expediente Clínico de Ingreso y Cuidados - Huellitas MaJeMa</h1>
@@ -885,18 +977,19 @@ export default function Dashboard() {
                   <div className="mb-3 text-center text-xs uppercase tracking-[0.2em]" style={{ color: '#92400e' }}>
                     Archivo clínico interno
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4 items-end">
                     <div className="text-center">
-                      <div className="mb-8 h-0.5" style={{ backgroundColor: '#94a3b8' }} />
+                      <div className="mb-2 h-0.5 w-2/3 mx-auto" style={{ backgroundColor: '#94a3b8' }} />
                       <div className="text-sm">Firma del Refugio</div>
                     </div>
                     <div className="text-center">
-                      <div className="mb-8 h-0.5" style={{ backgroundColor: '#94a3b8' }} />
+                      <div className="mb-2 h-0.5 w-2/3 mx-auto" style={{ backgroundColor: '#94a3b8' }} />
                       <div className="text-sm">Firma del Adoptante</div>
                     </div>
                   </div>
                   <div className="mt-4 text-center">Documento generado por Huellitas MaJeMa — Versión para impresión y archivo clínico</div>
                 </footer>
+              </div>
               </div>
             </div>
           </div>
@@ -909,7 +1002,7 @@ export default function Dashboard() {
           <div className="relative w-full max-w-5xl">
             <div
               ref={certificateRef}
-              className="mx-auto aspect-[1.414/1] w-full max-w-[1100px] rounded-lg p-7"
+              className="mx-auto aspect-[1.414/1] w-full max-w-275 rounded-lg p-7"
               style={{ backgroundColor: '#fff9eb', color: '#1f2937' }}
             >
               <div

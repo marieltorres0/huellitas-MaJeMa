@@ -25,6 +25,7 @@ type AddPetFormOutput = z.output<typeof addPetSchema>
 export default function AddPet() {
   const addPet = usePetStore((s) => s.addPet)
   const speciesOptions = useSettingsStore((s) => s.speciesOptions)
+  const breedOptions = useSettingsStore((s) => s.breedOptions)
   const navigate = useNavigate()
   const speciesChoices = speciesOptions.length > 0 ? speciesOptions : [...DEFAULT_SPECIES_OPTIONS]
 
@@ -45,7 +46,7 @@ export default function AddPet() {
   })
 
   const selectedSpecies = watch('species')
-  const breedChoices = getBreedOptionsForSpecies(selectedSpecies)
+  const breedChoices = getBreedOptionsForSpecies(selectedSpecies, breedOptions)
 
   useEffect(() => {
     const currentBreed = watch('breed')

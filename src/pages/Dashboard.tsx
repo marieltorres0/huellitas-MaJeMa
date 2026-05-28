@@ -150,6 +150,7 @@ export default function Dashboard() {
   const updatePet = usePetStore((state) => state.updatePet)
   const deletePet = usePetStore((state) => state.deletePet)
   const speciesOptions = useSettingsStore((state) => state.speciesOptions)
+  const breedOptions = useSettingsStore((state) => state.breedOptions)
   const user = useAuthStore((state) => state.user)
   const isNormalUser = user?.role === 'normal'
 
@@ -194,8 +195,8 @@ export default function Dashboard() {
   const currentSpecies = watch('species') as string
   const currentBreed = watch('breed') as string
   const breedChoices = currentSpecies === selectedPet?.species
-    ? mergeBreedOptions(getBreedOptionsForSpecies(currentSpecies), currentBreed)
-    : getBreedOptionsForSpecies(currentSpecies)
+    ? mergeBreedOptions(getBreedOptionsForSpecies(currentSpecies, breedOptions), currentBreed)
+    : getBreedOptionsForSpecies(currentSpecies, breedOptions)
   const speciesChoices = mergeSpeciesOptions(
     speciesOptions.length > 0 ? speciesOptions : [...DEFAULT_SPECIES_OPTIONS],
     selectedPet?.species,

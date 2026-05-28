@@ -60,6 +60,7 @@ export default function EditPet() {
   const updatePet = usePetStore((s) => s.updatePet)
   const user = useAuthStore((s) => s.user)
   const speciesOptions = useSettingsStore((s) => s.speciesOptions)
+  const breedOptions = useSettingsStore((s) => s.breedOptions)
 
   const pet = pets.find((p) => p.id === id)
   const isNormal = user?.role === 'normal'
@@ -112,7 +113,7 @@ export default function EditPet() {
 
   const currentSpecies = watch('species')
   const currentBreed = watch('breed')
-  const breedChoices = getBreedOptionsForSpecies(currentSpecies)
+  const breedChoices = getBreedOptionsForSpecies(currentSpecies, breedOptions)
 
   useEffect(() => {
     if (!currentBreed || !breedChoices.some((breed) => breed === currentBreed)) {

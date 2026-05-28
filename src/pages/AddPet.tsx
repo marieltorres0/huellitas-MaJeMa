@@ -59,41 +59,41 @@ export default function AddPet() {
   }
 
   return (
-    <div className="max-w-3xl rounded-xl bg-white p-6 shadow-md">
-      <h2 className="mb-4 text-2xl font-bold">Registrar Nueva Mascota</h2>
+    <div className="max-w-3xl rounded-xl bg-white p-6 shadow-md transition-colors dark:bg-gray-900 dark:text-gray-100 dark:shadow-none dark:ring-1 dark:ring-gray-700">
+      <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-gray-100">Registrar Nueva Mascota</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold">Datos Generales</h3>
+        <section className="space-y-4 rounded-2xl bg-slate-50 p-4 transition-colors dark:bg-blue-950/30 dark:ring-1 dark:ring-blue-800">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Datos Generales</h3>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Nombre</label>
-              <input {...register('name')} className="w-full rounded border border-slate-200 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Nombre</label>
+              <input {...register('name')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400" />
               {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Raza</label>
-              <input {...register('breed')} className="w-full rounded border border-slate-200 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Raza</label>
+              <input {...register('breed')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400" />
               {errors.breed && <p className="mt-1 text-sm text-red-500">{errors.breed.message}</p>}
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Edad</label>
-              <input placeholder="2" type="number" step="1" min="0" {...register('age')} className={inputClass('age')} />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Edad</label>
+              <input placeholder="2" type="number" step="1" min="0" {...register('age')} className={`${inputClass('age')} bg-white dark:bg-gray-950 dark:text-gray-100 dark:border-blue-800 dark:focus:border-blue-400 dark:focus:ring-blue-400`} />
               {errors.age && <p className="mt-1 text-sm text-red-500">{errors.age.message}</p>}
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Peso</label>
-              <input placeholder="4.50" type="number" step="0.01" min="0.01" {...register('weight')} className={inputClass('weight')} />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Peso</label>
+              <input placeholder="4.50" type="number" step="0.01" min="0.01" {...register('weight')} className={`${inputClass('weight')} bg-white dark:bg-gray-950 dark:text-gray-100 dark:border-blue-800 dark:focus:border-blue-400 dark:focus:ring-blue-400`} />
               {errors.weight && <p className="mt-1 text-sm text-red-500">{errors.weight.message}</p>}
             </div>
 
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Especie</label>
-              <select {...register('species')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Especie</label>
+              <select {...register('species')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400">
                 <option value="Perro">Perro</option>
                 <option value="Gato">Gato</option>
                 <option value="Otro">Otro</option>
@@ -102,13 +102,13 @@ export default function AddPet() {
           </div>
         </section>
 
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold">Datos Clínicos</h3>
+        <section className="space-y-4 rounded-2xl bg-slate-50 p-4 transition-colors dark:bg-blue-950/30 dark:ring-1 dark:ring-blue-800">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Datos Clínicos</h3>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Estado Médico</label>
-              <select {...register('medicalStatus')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Estado Médico</label>
+              <select {...register('medicalStatus')} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400">
                 <option value="SANO">SANO</option>
                 <option value="EN_TRATAMIENTO">EN_TRATAMIENTO</option>
                 <option value="NECESIDADES_ESPECIALES">NECESIDADES_ESPECIALES</option>
@@ -116,14 +116,14 @@ export default function AddPet() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Notas Médicas</label>
-              <textarea {...register('medicalNotes')} rows={4} className="w-full rounded border border-slate-200 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"></textarea>
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Notas Médicas</label>
+              <textarea {...register('medicalNotes')} rows={4} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400"></textarea>
             </div>
           </div>
         </section>
 
         <div className="flex justify-end">
-          <button type="submit" disabled={isSubmitting} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-60">Registrar Mascota</button>
+          <button type="submit" disabled={isSubmitting} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-400">Registrar Mascota</button>
         </div>
       </form>
     </div>

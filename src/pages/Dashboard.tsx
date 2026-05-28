@@ -482,14 +482,16 @@ export default function Dashboard() {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     className={`rounded-2xl border border-dashed p-4 transition-colors ${
-                      snapshot.isDraggingOver ? 'border-blue-300 bg-blue-50/60' : 'border-slate-200 bg-transparent'
+                      snapshot.isDraggingOver
+                        ? 'border-blue-300 bg-blue-50/60 dark:border-blue-400 dark:bg-blue-950/50'
+                        : 'border-slate-200 bg-transparent dark:border-blue-900 dark:bg-blue-950/20'
                     }`}
                   >
-                    <h2 className="mb-4 text-xl font-semibold">{column.title}</h2>
+                    <h2 className="mb-4 text-xl font-semibold text-slate-900 dark:text-slate-100">{column.title}</h2>
 
                     <div className="space-y-4">
                       {petsInColumn.length === 0 && (
-                        <div className="text-sm text-slate-500">No hay mascotas en esta columna.</div>
+                        <div className="text-sm text-slate-500 dark:text-slate-400">No hay mascotas en esta columna.</div>
                       )}
 
                       {petsInColumn.map((pet, index) => (
@@ -499,8 +501,8 @@ export default function Dashboard() {
                               ref={draggableProvided.innerRef}
                               {...draggableProvided.draggableProps}
                               {...draggableProvided.dragHandleProps}
-                              className={`rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all ${
-                                snapshot.isDragging ? 'bg-blue-50/50 shadow-2xl ring-2 ring-blue-200' : ''
+                              className={`rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all dark:border-blue-900 dark:bg-blue-950/60 dark:shadow-none ${
+                                snapshot.isDragging ? 'bg-blue-50/50 shadow-2xl ring-2 ring-blue-200 dark:bg-blue-900/70 dark:ring-blue-400' : ''
                               }`}
                               style={draggableProvided.draggableProps.style}
                             >
@@ -509,14 +511,14 @@ export default function Dashboard() {
                                   <button
                                     type="button"
                                     onClick={() => openEditModal(pet)}
-                                    className="text-left text-lg font-bold text-slate-900 hover:text-blue-700"
+                                    className="text-left text-lg font-bold text-slate-900 hover:text-blue-700 dark:text-slate-100 dark:hover:text-blue-300"
                                   >
                                     {pet.name}
                                   </button>
-                                  <p className="text-sm text-slate-600">
+                                  <p className="text-sm text-slate-600 dark:text-slate-300">
                                     {pet.species} • {pet.breed}
                                   </p>
-                                  <p className="mt-1 text-sm text-slate-600">
+                                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                                     Edad: {pet.age} • Peso: {pet.weight}
                                   </p>
                                 </div>
@@ -525,13 +527,13 @@ export default function Dashboard() {
                               </div>
 
                               <div className="mt-4 flex items-center justify-between gap-3">
-                                <div className="text-sm text-slate-500">{pet.medicalNotes}</div>
+                                <div className="text-sm text-slate-500 dark:text-slate-400">{pet.medicalNotes}</div>
 
                                 <div className="flex items-center gap-2">
                                   <button
                                     type="button"
                                     onClick={() => openEditModal(pet)}
-                                    className="rounded px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-800"
+                                    className="rounded px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
                                   >
                                     Editar
                                   </button>
@@ -540,7 +542,7 @@ export default function Dashboard() {
                                     <button
                                       type="button"
                                       onClick={() => requestDeletePet(pet)}
-                                      className="rounded px-3 py-1 text-sm font-medium text-red-600 hover:text-red-800"
+                                      className="rounded px-3 py-1 text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-300 dark:hover:text-red-200"
                                     >
                                       Eliminar
                                     </button>
@@ -563,36 +565,36 @@ export default function Dashboard() {
 
       {isEditModalOpen && selectedPet && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl transition-all duration-300">
+          <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl transition-all duration-300 dark:bg-blue-950 dark:text-slate-100 dark:shadow-none dark:ring-1 dark:ring-blue-800">
             <button
               type="button"
               onClick={closeEditModal}
-              className="absolute right-4 top-4 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              className="absolute right-4 top-4 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-blue-900 dark:hover:text-slate-100"
               aria-label="Cerrar modal"
             >
               X
             </button>
 
-            <h3 className="mb-4 text-xl font-bold text-slate-900">{selectedPet.name}</h3>
+            <h3 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">{selectedPet.name}</h3>
 
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit as any)}>
               {!isNormalUser && (
                 <>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-slate-700">Nombre</label>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nombre</label>
                       <input {...register('name')} className={inputClass(Boolean(errors.name))} />
                       {errors.name && <p className="mt-1 text-sm text-red-500">{errorText('name')}</p>}
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-slate-700">Raza</label>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Raza</label>
                       <input {...register('breed')} className={inputClass(Boolean(errors.breed))} />
                       {errors.breed && <p className="mt-1 text-sm text-red-500">{errorText('breed')}</p>}
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-slate-700">Edad</label>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Edad</label>
                       <input
                         type="number"
                         step="1"
@@ -604,7 +606,7 @@ export default function Dashboard() {
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-slate-700">Peso</label>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Peso</label>
                       <input
                         type="number"
                         step="0.01"
@@ -616,7 +618,7 @@ export default function Dashboard() {
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-slate-700">Especie</label>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Especie</label>
                       <select {...register('species')} className={inputClass(Boolean(errors.species))}>
                         <option value="Perro">Perro</option>
                         <option value="Gato">Gato</option>
@@ -626,7 +628,7 @@ export default function Dashboard() {
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-slate-700">Estado Médico</label>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Estado Médico</label>
                       <select {...register('medicalStatus')} className={inputClass(Boolean(errors.medicalStatus))}>
                         <option value="SANO">SANO</option>
                         <option value="EN_TRATAMIENTO">EN_TRATAMIENTO</option>
@@ -637,7 +639,7 @@ export default function Dashboard() {
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-slate-700">Notas Médicas</label>
+                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Notas Médicas</label>
                     <textarea
                       {...register('medicalNotes')}
                       rows={3}
@@ -649,7 +651,7 @@ export default function Dashboard() {
               )}
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Estado de adopción</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Estado de adopción</label>
                 <select {...register('adoptionStatus')} className={inputClass(Boolean(errors.adoptionStatus))}>
                   <option value="DISPONIBLE">DISPONIBLE</option>
                   <option value="EN_PROCESO">EN_PROCESO</option>
@@ -661,13 +663,13 @@ export default function Dashboard() {
               {adoptionStatus === 'EN_PROCESO' && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-slate-700">Nombre del Adoptante</label>
+                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nombre del Adoptante</label>
                     <input {...register('adopterName')} className={inputClass(Boolean(errors.adopterName))} />
                     {errors.adopterName && <p className="mt-1 text-sm text-red-500">{errorText('adopterName')}</p>}
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-slate-700">Teléfono</label>
+                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Teléfono</label>
                     <input
                       type="text"
                       inputMode="numeric"
@@ -679,7 +681,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="mb-1 block text-sm font-medium text-slate-700">Dirección</label>
+                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Dirección</label>
                     <input {...register('adopterAddress')} className={inputClass(Boolean(errors.adopterAddress))} />
                     {errors.adopterAddress && <p className="mt-1 text-sm text-red-500">{errorText('adopterAddress')}</p>}
                   </div>
@@ -690,14 +692,14 @@ export default function Dashboard() {
                 <button
                   type="button"
                   onClick={closeEditModal}
-                  className="rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
+                  className="rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50 dark:border-blue-800 dark:text-slate-200 dark:hover:bg-blue-900"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowClinicalSheet(true)}
-                  className="rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
+                  className="rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50 dark:border-blue-800 dark:text-slate-200 dark:hover:bg-blue-900"
                 >
                   📄 Exportar Ficha Clínica
                 </button>
@@ -705,14 +707,14 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={openCertificate}
-                    className="rounded-lg border border-amber-400 bg-amber-50 px-4 py-2 font-medium text-amber-800 hover:bg-amber-100"
+                    className="rounded-lg border border-amber-400 bg-amber-50 px-4 py-2 font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-300 dark:bg-amber-950/40 dark:text-amber-100 dark:hover:bg-amber-900/50"
                   >
                     📜 Imprimir Certificado de Adopción
                   </button>
                 )}
                 <button
                   type="submit"
-                  className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+                  className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
                 >
                   Guardar
                 </button>

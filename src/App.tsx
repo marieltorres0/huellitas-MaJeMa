@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -6,7 +7,9 @@ import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import AddPet from './pages/AddPet'
 import EditPet from './pages/EditPet'
+import Settings from './pages/Settings'
 import { useAuthStore } from './store/authStore'
+import { useSettingsStore } from './store/useSettingsStore'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
 	const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
@@ -21,6 +24,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 // Dashboard component is imported from src/pages/Dashboard
 
 export default function App() {
+	const isDarkMode = useSettingsStore((state) => state.isDarkMode)
+
+	useEffect(() => {
+		document.documentElement.classList.toggle('dark', isDarkMode)
+	}, [isDarkMode])
+
 	return (
 		<BrowserRouter>
 			<Routes>
@@ -57,6 +66,17 @@ export default function App() {
 					}
 				>
 					<Route index element={<EditPet />} />
+				</Route>
+
+				<Route
+					path="/settings"
+					element={
+						<ProtectedRoute>
+							<Layout />
+						</ProtectedRoute>
+					}
+				>
+					<Route index element={<Settings />} />
 				</Route>
 
 				<Route path="*" element={<Navigate to="/dashboard" replace />} />

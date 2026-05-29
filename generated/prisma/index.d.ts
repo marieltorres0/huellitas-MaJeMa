@@ -1197,6 +1197,7 @@ export namespace Prisma {
     name: string | null
     breed: string | null
     age: string | null
+    birthDate: string | null
     weight: string | null
     species: string | null
     medicalStatus: $Enums.MedicalStatus | null
@@ -1214,6 +1215,7 @@ export namespace Prisma {
     name: string | null
     breed: string | null
     age: string | null
+    birthDate: string | null
     weight: string | null
     species: string | null
     medicalStatus: $Enums.MedicalStatus | null
@@ -1231,6 +1233,7 @@ export namespace Prisma {
     name: number
     breed: number
     age: number
+    birthDate: number
     weight: number
     species: number
     medicalStatus: number
@@ -1250,6 +1253,7 @@ export namespace Prisma {
     name?: true
     breed?: true
     age?: true
+    birthDate?: true
     weight?: true
     species?: true
     medicalStatus?: true
@@ -1267,6 +1271,7 @@ export namespace Prisma {
     name?: true
     breed?: true
     age?: true
+    birthDate?: true
     weight?: true
     species?: true
     medicalStatus?: true
@@ -1284,6 +1289,7 @@ export namespace Prisma {
     name?: true
     breed?: true
     age?: true
+    birthDate?: true
     weight?: true
     species?: true
     medicalStatus?: true
@@ -1374,6 +1380,7 @@ export namespace Prisma {
     name: string
     breed: string
     age: string
+    birthDate: string | null
     weight: string
     species: string
     medicalStatus: $Enums.MedicalStatus
@@ -1408,6 +1415,7 @@ export namespace Prisma {
     name?: boolean
     breed?: boolean
     age?: boolean
+    birthDate?: boolean
     weight?: boolean
     species?: boolean
     medicalStatus?: boolean
@@ -1425,6 +1433,7 @@ export namespace Prisma {
     name?: boolean
     breed?: boolean
     age?: boolean
+    birthDate?: boolean
     weight?: boolean
     species?: boolean
     medicalStatus?: boolean
@@ -1442,6 +1451,7 @@ export namespace Prisma {
     name?: boolean
     breed?: boolean
     age?: boolean
+    birthDate?: boolean
     weight?: boolean
     species?: boolean
     medicalStatus?: boolean
@@ -1459,6 +1469,7 @@ export namespace Prisma {
     name?: boolean
     breed?: boolean
     age?: boolean
+    birthDate?: boolean
     weight?: boolean
     species?: boolean
     medicalStatus?: boolean
@@ -1471,7 +1482,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "breed" | "age" | "weight" | "species" | "medicalStatus" | "medicalNotes" | "adoptionStatus" | "adopterName" | "adopterPhone" | "adopterAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["pet"]>
+  export type PetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "breed" | "age" | "birthDate" | "weight" | "species" | "medicalStatus" | "medicalNotes" | "adoptionStatus" | "adopterName" | "adopterPhone" | "adopterAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["pet"]>
 
   export type $PetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Pet"
@@ -1481,6 +1492,7 @@ export namespace Prisma {
       name: string
       breed: string
       age: string
+      birthDate: string | null
       weight: string
       species: string
       medicalStatus: $Enums.MedicalStatus
@@ -1918,6 +1930,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Pet", 'String'>
     readonly breed: FieldRef<"Pet", 'String'>
     readonly age: FieldRef<"Pet", 'String'>
+    readonly birthDate: FieldRef<"Pet", 'String'>
     readonly weight: FieldRef<"Pet", 'String'>
     readonly species: FieldRef<"Pet", 'String'>
     readonly medicalStatus: FieldRef<"Pet", 'MedicalStatus'>
@@ -5378,6 +5391,7 @@ export namespace Prisma {
     name: 'name',
     breed: 'breed',
     age: 'age',
+    birthDate: 'birthDate',
     weight: 'weight',
     species: 'species',
     medicalStatus: 'medicalStatus',
@@ -5594,6 +5608,7 @@ export namespace Prisma {
     name?: StringFilter<"Pet"> | string
     breed?: StringFilter<"Pet"> | string
     age?: StringFilter<"Pet"> | string
+    birthDate?: StringNullableFilter<"Pet"> | string | null
     weight?: StringFilter<"Pet"> | string
     species?: StringFilter<"Pet"> | string
     medicalStatus?: EnumMedicalStatusFilter<"Pet"> | $Enums.MedicalStatus
@@ -5611,6 +5626,7 @@ export namespace Prisma {
     name?: SortOrder
     breed?: SortOrder
     age?: SortOrder
+    birthDate?: SortOrderInput | SortOrder
     weight?: SortOrder
     species?: SortOrder
     medicalStatus?: SortOrder
@@ -5631,6 +5647,7 @@ export namespace Prisma {
     name?: StringFilter<"Pet"> | string
     breed?: StringFilter<"Pet"> | string
     age?: StringFilter<"Pet"> | string
+    birthDate?: StringNullableFilter<"Pet"> | string | null
     weight?: StringFilter<"Pet"> | string
     species?: StringFilter<"Pet"> | string
     medicalStatus?: EnumMedicalStatusFilter<"Pet"> | $Enums.MedicalStatus
@@ -5648,6 +5665,7 @@ export namespace Prisma {
     name?: SortOrder
     breed?: SortOrder
     age?: SortOrder
+    birthDate?: SortOrderInput | SortOrder
     weight?: SortOrder
     species?: SortOrder
     medicalStatus?: SortOrder
@@ -5671,6 +5689,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Pet"> | string
     breed?: StringWithAggregatesFilter<"Pet"> | string
     age?: StringWithAggregatesFilter<"Pet"> | string
+    birthDate?: StringNullableWithAggregatesFilter<"Pet"> | string | null
     weight?: StringWithAggregatesFilter<"Pet"> | string
     species?: StringWithAggregatesFilter<"Pet"> | string
     medicalStatus?: EnumMedicalStatusWithAggregatesFilter<"Pet"> | $Enums.MedicalStatus
@@ -5848,6 +5867,7 @@ export namespace Prisma {
     name: string
     breed: string
     age: string
+    birthDate?: string | null
     weight: string
     species: string
     medicalStatus: $Enums.MedicalStatus
@@ -5865,6 +5885,7 @@ export namespace Prisma {
     name: string
     breed: string
     age: string
+    birthDate?: string | null
     weight: string
     species: string
     medicalStatus: $Enums.MedicalStatus
@@ -5882,6 +5903,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     breed?: StringFieldUpdateOperationsInput | string
     age?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableStringFieldUpdateOperationsInput | string | null
     weight?: StringFieldUpdateOperationsInput | string
     species?: StringFieldUpdateOperationsInput | string
     medicalStatus?: EnumMedicalStatusFieldUpdateOperationsInput | $Enums.MedicalStatus
@@ -5899,6 +5921,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     breed?: StringFieldUpdateOperationsInput | string
     age?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableStringFieldUpdateOperationsInput | string | null
     weight?: StringFieldUpdateOperationsInput | string
     species?: StringFieldUpdateOperationsInput | string
     medicalStatus?: EnumMedicalStatusFieldUpdateOperationsInput | $Enums.MedicalStatus
@@ -5916,6 +5939,7 @@ export namespace Prisma {
     name: string
     breed: string
     age: string
+    birthDate?: string | null
     weight: string
     species: string
     medicalStatus: $Enums.MedicalStatus
@@ -5933,6 +5957,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     breed?: StringFieldUpdateOperationsInput | string
     age?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableStringFieldUpdateOperationsInput | string | null
     weight?: StringFieldUpdateOperationsInput | string
     species?: StringFieldUpdateOperationsInput | string
     medicalStatus?: EnumMedicalStatusFieldUpdateOperationsInput | $Enums.MedicalStatus
@@ -5950,6 +5975,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     breed?: StringFieldUpdateOperationsInput | string
     age?: StringFieldUpdateOperationsInput | string
+    birthDate?: NullableStringFieldUpdateOperationsInput | string | null
     weight?: StringFieldUpdateOperationsInput | string
     species?: StringFieldUpdateOperationsInput | string
     medicalStatus?: EnumMedicalStatusFieldUpdateOperationsInput | $Enums.MedicalStatus
@@ -6145,20 +6171,6 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type EnumMedicalStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.MedicalStatus | EnumMedicalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumMedicalStatusFilter<$PrismaModel> | $Enums.MedicalStatus
-  }
-
-  export type EnumAdoptionStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.AdoptionStatus | EnumAdoptionStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumAdoptionStatusFilter<$PrismaModel> | $Enums.AdoptionStatus
-  }
-
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -6172,6 +6184,20 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type EnumMedicalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.MedicalStatus | EnumMedicalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMedicalStatusFilter<$PrismaModel> | $Enums.MedicalStatus
+  }
+
+  export type EnumAdoptionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AdoptionStatus | EnumAdoptionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAdoptionStatusFilter<$PrismaModel> | $Enums.AdoptionStatus
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -6195,6 +6221,7 @@ export namespace Prisma {
     name?: SortOrder
     breed?: SortOrder
     age?: SortOrder
+    birthDate?: SortOrder
     weight?: SortOrder
     species?: SortOrder
     medicalStatus?: SortOrder
@@ -6212,6 +6239,7 @@ export namespace Prisma {
     name?: SortOrder
     breed?: SortOrder
     age?: SortOrder
+    birthDate?: SortOrder
     weight?: SortOrder
     species?: SortOrder
     medicalStatus?: SortOrder
@@ -6229,6 +6257,7 @@ export namespace Prisma {
     name?: SortOrder
     breed?: SortOrder
     age?: SortOrder
+    birthDate?: SortOrder
     weight?: SortOrder
     species?: SortOrder
     medicalStatus?: SortOrder
@@ -6259,6 +6288,24 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type EnumMedicalStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.MedicalStatus | EnumMedicalStatusFieldRefInput<$PrismaModel>
     in?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
@@ -6277,24 +6324,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAdoptionStatusFilter<$PrismaModel>
     _max?: NestedEnumAdoptionStatusFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -6492,16 +6521,16 @@ export namespace Prisma {
     set?: string
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type EnumMedicalStatusFieldUpdateOperationsInput = {
     set?: $Enums.MedicalStatus
   }
 
   export type EnumAdoptionStatusFieldUpdateOperationsInput = {
     set?: $Enums.AdoptionStatus
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -6534,20 +6563,6 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedEnumMedicalStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.MedicalStatus | EnumMedicalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumMedicalStatusFilter<$PrismaModel> | $Enums.MedicalStatus
-  }
-
-  export type NestedEnumAdoptionStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.AdoptionStatus | EnumAdoptionStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumAdoptionStatusFilter<$PrismaModel> | $Enums.AdoptionStatus
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -6560,6 +6575,20 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedEnumMedicalStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.MedicalStatus | EnumMedicalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMedicalStatusFilter<$PrismaModel> | $Enums.MedicalStatus
+  }
+
+  export type NestedEnumAdoptionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AdoptionStatus | EnumAdoptionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAdoptionStatusFilter<$PrismaModel> | $Enums.AdoptionStatus
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -6601,26 +6630,6 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type NestedEnumMedicalStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.MedicalStatus | EnumMedicalStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumMedicalStatusWithAggregatesFilter<$PrismaModel> | $Enums.MedicalStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumMedicalStatusFilter<$PrismaModel>
-    _max?: NestedEnumMedicalStatusFilter<$PrismaModel>
-  }
-
-  export type NestedEnumAdoptionStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.AdoptionStatus | EnumAdoptionStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumAdoptionStatusWithAggregatesFilter<$PrismaModel> | $Enums.AdoptionStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumAdoptionStatusFilter<$PrismaModel>
-    _max?: NestedEnumAdoptionStatusFilter<$PrismaModel>
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -6647,6 +6656,26 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumMedicalStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MedicalStatus | EnumMedicalStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MedicalStatus[] | ListEnumMedicalStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMedicalStatusWithAggregatesFilter<$PrismaModel> | $Enums.MedicalStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMedicalStatusFilter<$PrismaModel>
+    _max?: NestedEnumMedicalStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAdoptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AdoptionStatus | EnumAdoptionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AdoptionStatus[] | ListEnumAdoptionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAdoptionStatusWithAggregatesFilter<$PrismaModel> | $Enums.AdoptionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAdoptionStatusFilter<$PrismaModel>
+    _max?: NestedEnumAdoptionStatusFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -8,11 +8,20 @@ import { usePetStore } from '../store/petStore'
 import { useSettingsStore } from '../store/useSettingsStore'
 import { DEFAULT_SPECIES_OPTIONS } from '../utils/speciesOptions'
 import { getBreedOptionsForSpecies } from '../utils/breedOptions'
+import {
+  birthDateDisplayToISO,
+  birthDateISOToDisplay,
+  formatBirthDateDigits,
+  isValidBirthDateDisplay,
+} from '../utils/birthDate'
 
 const addPetSchema = z.object({
   name: z.string().min(1, 'Nombre es obligatorio'),
   breed: z.string().min(1, 'Raza es obligatoria'),
   age: z.coerce.number().refine((v) => Number.isInteger(v) && v >= 0, { message: 'La edad debe ser un número entero (ej. 2)' }),
+  birthDate: z.string().min(1, 'Fecha de nacimiento es obligatoria').refine(isValidBirthDateDisplay, {
+    message: 'Escribe una fecha válida o usa el calendario',
+  }),
   weight: z.coerce.number().refine((v) => typeof v === 'number' && v > 0, { message: 'El peso debe ser un número válido (ej. 4.5)' }),
   species: z.string().min(1, 'Especie es obligatoria'),
   medicalStatus: z.enum(['SANO', 'EN_TRATAMIENTO', 'NECESIDADES_ESPECIALES'] as const).optional(),
@@ -27,6 +36,7 @@ export default function AddPet() {
   const speciesOptions = useSettingsStore((s) => s.speciesOptions)
   const breedOptions = useSettingsStore((s) => s.breedOptions)
   const navigate = useNavigate()
+  const birthDatePickerRef = useRef<HTMLInputElement | null>(null)
   const speciesChoices = speciesOptions.length > 0 ? speciesOptions : [...DEFAULT_SPECIES_OPTIONS]
 
   const {
@@ -40,6 +50,7 @@ export default function AddPet() {
     defaultValues: {
       species: speciesChoices[0] ?? 'Perro',
       breed: getBreedOptionsForSpecies(speciesChoices[0] ?? 'Perro')[0] ?? 'Mestizo',
+      birthDate: '',
       medicalStatus: 'SANO',
       medicalNotes: '',
     },
@@ -47,6 +58,7 @@ export default function AddPet() {
 
   const selectedSpecies = watch('species')
   const breedChoices = getBreedOptionsForSpecies(selectedSpecies, breedOptions)
+  const birthDateValue = watch('birthDate')
 
   useEffect(() => {
     const currentBreed = watch('breed')
@@ -54,6 +66,10 @@ export default function AddPet() {
       setValue('breed', breedChoices[0] ?? 'Mestizo', { shouldValidate: true })
     }
   }, [breedChoices, setValue, watch])
+
+  const openBirthDatePicker = () => {
+    birthDatePickerRef.current?.showPicker?.() ?? birthDatePickerRef.current?.click()
+  }
 
   const hasError = (field: keyof AddPetFormInput) => !!errors[field]
 
@@ -66,6 +82,7 @@ export default function AddPet() {
         name: data.name,
         breed: data.breed,
         age: String(data.age),
+        birthDate: birthDateDisplayToISO(data.birthDate),
         weight: String(data.weight),
         species: data.species,
         medicalStatus: data.medicalStatus ?? 'SANO',
@@ -100,6 +117,36 @@ export default function AddPet() {
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Edad</label>
               <input placeholder="2" type="number" step="1" min="0" {...register('age')} className={`${inputClass('age')} bg-white dark:bg-gray-950 dark:text-gray-100 dark:border-blue-800 dark:focus:border-blue-400 dark:focus:ring-blue-400`} />
               {errors.age && <p className="mt-1 text-sm text-red-500">{errors.age.message}</p>}
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-200">Fecha de nacimiento</label>
+              <div className="flex gap-2">
+                <input
+                  value={birthDateValue ?? ''}
+                  onChange={(event) => setValue('birthDate', formatBirthDateDigits(event.target.value), { shouldValidate: true, shouldDirty: true })}
+                  placeholder="DD / MM / AAAA"
+                  inputMode="numeric"
+                  className={`${inputClass('birthDate')} bg-white dark:bg-gray-950 dark:text-gray-100 dark:border-blue-800 dark:focus:border-blue-400 dark:focus:ring-blue-400`}
+                />
+                <button
+                  type="button"
+                  onClick={openBirthDatePicker}
+                  className="rounded border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-blue-800 dark:text-gray-100 dark:hover:bg-blue-900"
+                >
+                  Calendario
+                </button>
+                <input
+                  ref={birthDatePickerRef}
+                  type="date"
+                  aria-hidden="true"
+                  tabIndex={-1}
+                  value={birthDateDisplayToISO(birthDateValue ?? '')}
+                  onChange={(event) => setValue('birthDate', birthDateISOToDisplay(event.target.value), { shouldValidate: true, shouldDirty: true })}
+                  className="sr-only"
+                />
+              </div>
+              {errors.birthDate && <p className="mt-1 text-sm text-red-500">{errors.birthDate.message}</p>}
             </div>
 
             <div>

@@ -8,6 +8,7 @@ type PetPayload = {
   name: string
   breed: string
   age: string
+  birthDate?: string | null
   weight: string
   species: string
   medicalStatus: 'SANO' | 'EN_TRATAMIENTO' | 'NECESIDADES_ESPECIALES'
@@ -34,6 +35,29 @@ const normalizeText = (value: unknown) => {
   if (typeof value !== 'string') return null
   const trimmed = value.trim()
   return trimmed.length > 0 ? trimmed : null
+}
+
+const normalizeBirthDate = (value: unknown) => {
+  if (typeof value !== 'string') return null
+
+  const trimmed = value.trim()
+  if (!trimmed) return null
+
+  const match = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (!match) return null
+
+  const iso = `${match[1]}-${match[2]}-${match[3]}`
+  const date = new Date(`${iso}T00:00:00Z`)
+
+  if (
+    date.getUTCFullYear() !== Number(match[1]) ||
+    date.getUTCMonth() + 1 !== Number(match[2]) ||
+    date.getUTCDate() !== Number(match[3])
+  ) {
+    return null
+  }
+
+  return iso
 }
 
 const normalizeStringList = (value: unknown, fallback: string[]) => {
@@ -156,6 +180,7 @@ app.post('/api/pets', async (req, res, next) => {
         name: body.name,
         breed: body.breed,
         age: String(body.age),
+        birthDate: normalizeBirthDate(body.birthDate),
         weight: String(body.weight),
         species: body.species,
         medicalStatus: body.medicalStatus,
@@ -196,6 +221,7 @@ app.patch('/api/pets/:id', async (req, res, next) => {
         name: body.name ?? existingPet.name,
         breed: body.breed ?? existingPet.breed,
         age: body.age !== undefined ? String(body.age) : existingPet.age,
+        birthDate: body.birthDate !== undefined ? normalizeBirthDate(body.birthDate) : existingPet.birthDate,
         weight: body.weight !== undefined ? String(body.weight) : existingPet.weight,
         species: body.species ?? existingPet.species,
         medicalStatus: body.medicalStatus ?? existingPet.medicalStatus,

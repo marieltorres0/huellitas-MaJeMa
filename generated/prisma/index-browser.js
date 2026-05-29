@@ -125,6 +125,7 @@ exports.Prisma.PetScalarFieldEnum = {
   name: 'name',
   breed: 'breed',
   age: 'age',
+  birthDate: 'birthDate',
   weight: 'weight',
   species: 'species',
   medicalStatus: 'medicalStatus',

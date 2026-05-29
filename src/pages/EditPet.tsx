@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,12 +9,21 @@ import { useAuthStore } from '../store/authStore'
 import { useSettingsStore } from '../store/useSettingsStore'
 import { DEFAULT_SPECIES_OPTIONS, mergeSpeciesOptions } from '../utils/speciesOptions'
 import { getBreedOptionsForSpecies } from '../utils/breedOptions'
+import {
+  birthDateDisplayToISO,
+  birthDateISOToDisplay,
+  formatBirthDateDigits,
+  isValidBirthDateDisplay,
+} from '../utils/birthDate'
 
 const editPetSchema = z
   .object({
     name: z.string().min(1, 'Nombre es obligatorio'),
     breed: z.string().min(1, 'Raza es obligatoria'),
     age: z.string().min(1, 'Edad es obligatoria'),
+    birthDate: z.string().min(1, 'Fecha de nacimiento es obligatoria').refine(isValidBirthDateDisplay, {
+      message: 'Escribe una fecha válida o usa el calendario',
+    }),
     weight: z.string().min(1, 'Peso es obligatorio'),
     species: z.string().min(1, 'Especie es obligatoria'),
     medicalStatus: z.enum(['SANO', 'EN_TRATAMIENTO', 'NECESIDADES_ESPECIALES'] as const),
@@ -61,6 +70,7 @@ export default function EditPet() {
   const user = useAuthStore((s) => s.user)
   const speciesOptions = useSettingsStore((s) => s.speciesOptions)
   const breedOptions = useSettingsStore((s) => s.breedOptions)
+  const birthDatePickerRef = useRef<HTMLInputElement | null>(null)
 
   const pet = pets.find((p) => p.id === id)
   const isNormal = user?.role === 'normal'
@@ -82,6 +92,7 @@ export default function EditPet() {
       name: '',
       breed: '',
       age: '',
+      birthDate: '',
       weight: '',
       species: 'Perro',
       medicalStatus: 'SANO',
@@ -100,6 +111,7 @@ export default function EditPet() {
       name: pet.name,
       breed: pet.breed,
       age: pet.age,
+      birthDate: birthDateISOToDisplay(pet.birthDate),
       weight: pet.weight,
       species: pet.species,
       medicalStatus: pet.medicalStatus,
@@ -114,12 +126,17 @@ export default function EditPet() {
   const currentSpecies = watch('species')
   const currentBreed = watch('breed')
   const breedChoices = getBreedOptionsForSpecies(currentSpecies, breedOptions)
+  const birthDateValue = watch('birthDate')
 
   useEffect(() => {
     if (!currentBreed || !breedChoices.some((breed) => breed === currentBreed)) {
       setValue('breed', breedChoices[0] ?? 'Mestizo', { shouldValidate: true })
     }
   }, [breedChoices, currentBreed, setValue])
+
+  const openBirthDatePicker = () => {
+    birthDatePickerRef.current?.showPicker?.() ?? birthDatePickerRef.current?.click()
+  }
 
   const currentAdoptionStatus = watch('adoptionStatus')
 
@@ -131,6 +148,7 @@ export default function EditPet() {
         name: data.name,
         breed: data.breed,
         age: data.age,
+        birthDate: birthDateDisplayToISO(data.birthDate),
         weight: data.weight,
         species: data.species,
         medicalStatus: data.medicalStatus,
@@ -189,6 +207,38 @@ export default function EditPet() {
                 className="w-full rounded border border-slate-200 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
               />
               {errors.age && <p className="mt-1 text-sm text-red-500">{errors.age.message}</p>}
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Fecha de nacimiento</label>
+              <div className="flex gap-2">
+                <input
+                  value={birthDateValue ?? ''}
+                  onChange={(event) => setValue('birthDate', formatBirthDateDigits(event.target.value), { shouldValidate: true, shouldDirty: true })}
+                  placeholder="DD / MM / AAAA"
+                  inputMode="numeric"
+                  disabled={isNormal}
+                  className="w-full rounded border border-slate-200 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
+                />
+                <button
+                  type="button"
+                  onClick={openBirthDatePicker}
+                  disabled={isNormal}
+                  className="rounded border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                >
+                  Calendario
+                </button>
+                <input
+                  ref={birthDatePickerRef}
+                  type="date"
+                  aria-hidden="true"
+                  tabIndex={-1}
+                  value={birthDateDisplayToISO(birthDateValue ?? '')}
+                  onChange={(event) => setValue('birthDate', birthDateISOToDisplay(event.target.value), { shouldValidate: true, shouldDirty: true })}
+                  className="sr-only"
+                />
+              </div>
+              {errors.birthDate && <p className="mt-1 text-sm text-red-500">{errors.birthDate.message}</p>}
             </div>
 
             <div>

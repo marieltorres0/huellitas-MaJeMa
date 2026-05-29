@@ -10,6 +10,7 @@ export interface Pet {
   name: string
   breed: string
   age: string
+  birthDate?: string | null
   weight: string
   species: string
   medicalStatus: MedicalStatus

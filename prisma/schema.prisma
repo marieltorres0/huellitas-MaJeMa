@@ -36,6 +36,7 @@ model Pet {
   name           String
   breed          String
   age            String
+  birthDate      String?
   weight         String
   species        String
   medicalStatus  MedicalStatus

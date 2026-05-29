@@ -9,6 +9,12 @@ import { type Pet, usePetStore } from '../store/petStore'
 import { useSettingsStore } from '../store/useSettingsStore'
 import { DEFAULT_SPECIES_OPTIONS, mergeSpeciesOptions } from '../utils/speciesOptions'
 import { getBreedOptionsForSpecies, mergeBreedOptions } from '../utils/breedOptions'
+import {
+  birthDateDisplayToISO,
+  birthDateISOToDisplay,
+  formatBirthDateDigits,
+  isValidBirthDateDisplay,
+} from '../utils/birthDate'
 
 const adoptionStatuses = ['DISPONIBLE', 'EN_PROCESO', 'ADOPTADO'] as const
 type AdoptionStatus = (typeof adoptionStatuses)[number]
@@ -17,6 +23,7 @@ type ModalFormValues = {
   name?: string
   breed?: string
   age?: number | string
+  birthDate?: string
   weight?: number | string
   species?: Pet['species']
   medicalStatus?: Pet['medicalStatus']
@@ -71,6 +78,9 @@ const adminModalSchema = z
       .number()
       .int('La edad debe ser un número entero (ej. 2)')
       .min(0, 'La edad debe ser un número entero (ej. 2)'),
+    birthDate: z.string().min(1, 'Fecha de nacimiento es obligatoria').refine(isValidBirthDateDisplay, {
+      message: 'Escribe una fecha válida o usa el calendario',
+    }),
     weight: z.coerce.number().gt(0, 'El peso debe ser un número válido (ej. 4.5)'),
     species: z.string().min(1, 'Especie es obligatoria'),
     medicalStatus: z.enum(['SANO', 'EN_TRATAMIENTO', 'NECESIDADES_ESPECIALES'] as const),
@@ -101,6 +111,7 @@ function getPetFormValues(pet: Pet, adoptionStatusOverride?: AdoptionStatus): Mo
     name: pet.name,
     breed: pet.breed,
     age: Number.isNaN(parsedAge) ? '' : String(parsedAge),
+    birthDate: birthDateISOToDisplay(pet.birthDate),
     weight: Number.isNaN(parsedWeight) ? '' : String(parsedWeight),
     species: pet.species,
     medicalStatus: pet.medicalStatus,
@@ -194,6 +205,7 @@ export default function Dashboard() {
   const adoptionStatus = (watch('adoptionStatus') as AdoptionStatus) ?? 'DISPONIBLE'
   const currentSpecies = watch('species') as string
   const currentBreed = watch('breed') as string
+  const birthDateValue = watch('birthDate') as string
   const breedChoices = currentSpecies === selectedPet?.species
     ? mergeBreedOptions(getBreedOptionsForSpecies(currentSpecies, breedOptions), currentBreed)
     : getBreedOptionsForSpecies(currentSpecies, breedOptions)
@@ -219,6 +231,8 @@ export default function Dashboard() {
     `${inputClass(hasError)} bg-white text-slate-900 dark:border-blue-800 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400`
 
   const errorText = (field: string) => String(errors?.[field]?.message ?? '')
+
+  const birthDatePickerRef = useRef<HTMLInputElement | null>(null)
 
   const hasValidAdopterData = hasCompleteAdopterData(draggedPet)
 
@@ -329,6 +343,10 @@ export default function Dashboard() {
     }
   }
 
+  const openBirthDatePicker = () => {
+    birthDatePickerRef.current?.showPicker?.() ?? birthDatePickerRef.current?.click()
+  }
+
   const closeConfirmModal = () => {
     setIsConfirmModalOpen(false)
     setPendingConfirmData(null)
@@ -406,6 +424,7 @@ export default function Dashboard() {
       name: data.name ?? pet.name,
       breed: data.breed ?? pet.breed,
       age: String(data.age ?? pet.age),
+      birthDate: birthDateDisplayToISO(data.birthDate ?? pet.birthDate ?? ''),
       weight: String(data.weight ?? pet.weight),
       species: data.species ?? pet.species,
       medicalStatus: data.medicalStatus ?? pet.medicalStatus,
@@ -579,6 +598,11 @@ export default function Dashboard() {
                                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                                     Edad: {pet.age} • Peso: {pet.weight}
                                   </p>
+                                  {pet.birthDate && (
+                                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                                      Nacimiento: {birthDateISOToDisplay(pet.birthDate)}
+                                    </p>
+                                  )}
                                 </div>
 
                                 <div>{medicalBadge(pet.medicalStatus)}</div>
@@ -655,6 +679,36 @@ export default function Dashboard() {
                         className={inputClass(Boolean(errors.age))}
                       />
                       {errors.age && <p className="mt-1 text-sm text-red-500">{errorText('age')}</p>}
+                    </div>
+
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha de nacimiento</label>
+                      <div className="flex gap-2">
+                        <input
+                          value={birthDateValue ?? ''}
+                          onChange={(event) => setValue('birthDate', formatBirthDateDigits(event.target.value), { shouldValidate: true, shouldDirty: true })}
+                          placeholder="DD / MM / AAAA"
+                          inputMode="numeric"
+                          className={inputClass(Boolean(errors.birthDate))}
+                        />
+                        <button
+                          type="button"
+                          onClick={openBirthDatePicker}
+                          className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-blue-800 dark:text-slate-200 dark:hover:bg-blue-900"
+                        >
+                          Calendario
+                        </button>
+                        <input
+                          ref={birthDatePickerRef}
+                          type="date"
+                          aria-hidden="true"
+                          tabIndex={-1}
+                          value={birthDateDisplayToISO(birthDateValue ?? '')}
+                          onChange={(event) => setValue('birthDate', birthDateISOToDisplay(event.target.value), { shouldValidate: true, shouldDirty: true })}
+                          className="sr-only"
+                        />
+                      </div>
+                      {errors.birthDate && <p className="mt-1 text-sm text-red-500">{errorText('birthDate')}</p>}
                     </div>
 
                     <div>

@@ -154,9 +154,20 @@ exports.Prisma.ShelterProfileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CatalogSettingsScalarFieldEnum = {
+  id: 'id',
+  speciesOptions: 'speciesOptions',
+  breedOptions: 'breedOptions',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -167,6 +178,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.MedicalStatus = exports.$Enums.MedicalStatus = {
   SANO: 'SANO',
@@ -188,7 +205,8 @@ exports.Role = exports.$Enums.Role = {
 exports.Prisma.ModelName = {
   Pet: 'Pet',
   User: 'User',
-  ShelterProfile: 'ShelterProfile'
+  ShelterProfile: 'ShelterProfile',
+  CatalogSettings: 'CatalogSettings'
 };
 
 /**

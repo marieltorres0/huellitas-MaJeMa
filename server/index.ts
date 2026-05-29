@@ -1,6 +1,8 @@
 import cors from 'cors'
 import express from 'express'
 import { prisma } from '../lib/prisma'
+import { DEFAULT_BREED_OPTIONS } from '../src/utils/breedOptions'
+import { DEFAULT_SPECIES_OPTIONS, normalizeSpeciesOption } from '../src/utils/speciesOptions'
 
 type PetPayload = {
   name: string
@@ -16,6 +18,11 @@ type PetPayload = {
   adopterAddress?: string | null
 }
 
+type CatalogSettingsPayload = {
+  speciesOptions?: string[]
+  breedOptions?: Record<string, string[]>
+}
+
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
 const db = prisma as any
@@ -29,8 +36,92 @@ const normalizeText = (value: unknown) => {
   return trimmed.length > 0 ? trimmed : null
 }
 
+const normalizeStringList = (value: unknown, fallback: string[]) => {
+  if (!Array.isArray(value)) return fallback
+
+  const normalized = value
+    .map((entry) => (typeof entry === 'string' ? normalizeSpeciesOption(entry) : ''))
+    .filter((entry) => entry.length > 0)
+
+  return normalized.length > 0 ? Array.from(new Set(normalized)) : fallback
+}
+
+const normalizeBreedMap = (value: unknown, speciesOptions: string[]) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return DEFAULT_BREED_OPTIONS
+
+  const input = value as Record<string, unknown>
+  const output: Record<string, string[]> = {}
+
+  for (const species of speciesOptions) {
+    const breeds = Array.isArray(input[species]) ? input[species] : DEFAULT_BREED_OPTIONS[species] ?? ['Mestizo']
+    const normalizedBreeds = breeds
+      .map((entry) => (typeof entry === 'string' ? normalizeSpeciesOption(entry) : ''))
+      .filter((entry) => entry.length > 0)
+
+    output[species] = normalizedBreeds.length > 0 ? Array.from(new Set(normalizedBreeds)) : ['Mestizo']
+  }
+
+  return output
+}
+
+async function readCatalogSettings() {
+  const existingSettings = await db.catalogSettings.findUnique({ where: { id: 1 } })
+
+  if (existingSettings) {
+    return existingSettings
+  }
+
+  return db.catalogSettings.create({
+    data: {
+      id: 1,
+      speciesOptions: DEFAULT_SPECIES_OPTIONS as unknown as never,
+      breedOptions: DEFAULT_BREED_OPTIONS as unknown as never,
+    },
+  })
+}
+
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true })
+})
+
+app.get('/api/settings/catalogs', async (_req, res, next) => {
+  try {
+    const settings = await readCatalogSettings()
+    res.json({
+      speciesOptions: (settings.speciesOptions as string[]) ?? [...DEFAULT_SPECIES_OPTIONS],
+      breedOptions: (settings.breedOptions as Record<string, string[]>) ?? DEFAULT_BREED_OPTIONS,
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.patch('/api/settings/catalogs', async (req, res, next) => {
+  try {
+    const body = req.body as CatalogSettingsPayload
+    const speciesOptions = normalizeStringList(body.speciesOptions, [...DEFAULT_SPECIES_OPTIONS])
+    const breedOptions = normalizeBreedMap(body.breedOptions, speciesOptions)
+
+    const savedSettings = await db.catalogSettings.upsert({
+      where: { id: 1 },
+      create: {
+        id: 1,
+        speciesOptions: speciesOptions as unknown as never,
+        breedOptions: breedOptions as unknown as never,
+      },
+      update: {
+        speciesOptions: speciesOptions as unknown as never,
+        breedOptions: breedOptions as unknown as never,
+      },
+    })
+
+    res.json({
+      speciesOptions: savedSettings.speciesOptions as string[],
+      breedOptions: savedSettings.breedOptions as Record<string, string[]>,
+    })
+  } catch (error) {
+    next(error)
+  }
 })
 
 app.get('/api/pets', async (_req, res, next) => {

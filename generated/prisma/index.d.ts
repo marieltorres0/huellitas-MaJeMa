@@ -28,6 +28,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  * 
  */
 export type ShelterProfile = $Result.DefaultSelection<Prisma.$ShelterProfilePayload>
+/**
+ * Model CatalogSettings
+ * 
+ */
+export type CatalogSettings = $Result.DefaultSelection<Prisma.$CatalogSettingsPayload>
 
 /**
  * Enums
@@ -222,6 +227,16 @@ export class PrismaClient<
     * ```
     */
   get shelterProfile(): Prisma.ShelterProfileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.catalogSettings`: Exposes CRUD operations for the **CatalogSettings** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CatalogSettings
+    * const catalogSettings = await prisma.catalogSettings.findMany()
+    * ```
+    */
+  get catalogSettings(): Prisma.CatalogSettingsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -658,7 +673,8 @@ export namespace Prisma {
   export const ModelName: {
     Pet: 'Pet',
     User: 'User',
-    ShelterProfile: 'ShelterProfile'
+    ShelterProfile: 'ShelterProfile',
+    CatalogSettings: 'CatalogSettings'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -674,7 +690,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "pet" | "user" | "shelterProfile"
+      modelProps: "pet" | "user" | "shelterProfile" | "catalogSettings"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -900,6 +916,80 @@ export namespace Prisma {
           }
         }
       }
+      CatalogSettings: {
+        payload: Prisma.$CatalogSettingsPayload<ExtArgs>
+        fields: Prisma.CatalogSettingsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CatalogSettingsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CatalogSettingsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>
+          }
+          findFirst: {
+            args: Prisma.CatalogSettingsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CatalogSettingsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>
+          }
+          findMany: {
+            args: Prisma.CatalogSettingsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>[]
+          }
+          create: {
+            args: Prisma.CatalogSettingsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>
+          }
+          createMany: {
+            args: Prisma.CatalogSettingsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CatalogSettingsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>[]
+          }
+          delete: {
+            args: Prisma.CatalogSettingsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>
+          }
+          update: {
+            args: Prisma.CatalogSettingsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>
+          }
+          deleteMany: {
+            args: Prisma.CatalogSettingsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CatalogSettingsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CatalogSettingsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>[]
+          }
+          upsert: {
+            args: Prisma.CatalogSettingsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CatalogSettingsPayload>
+          }
+          aggregate: {
+            args: Prisma.CatalogSettingsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCatalogSettings>
+          }
+          groupBy: {
+            args: Prisma.CatalogSettingsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CatalogSettingsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CatalogSettingsCountArgs<ExtArgs>
+            result: $Utils.Optional<CatalogSettingsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1011,6 +1101,7 @@ export namespace Prisma {
     pet?: PetOmit
     user?: UserOmit
     shelterProfile?: ShelterProfileOmit
+    catalogSettings?: CatalogSettingsOmit
   }
 
   /* Types for Logging */
@@ -4256,6 +4347,1019 @@ export namespace Prisma {
 
 
   /**
+   * Model CatalogSettings
+   */
+
+  export type AggregateCatalogSettings = {
+    _count: CatalogSettingsCountAggregateOutputType | null
+    _avg: CatalogSettingsAvgAggregateOutputType | null
+    _sum: CatalogSettingsSumAggregateOutputType | null
+    _min: CatalogSettingsMinAggregateOutputType | null
+    _max: CatalogSettingsMaxAggregateOutputType | null
+  }
+
+  export type CatalogSettingsAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type CatalogSettingsSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type CatalogSettingsMinAggregateOutputType = {
+    id: number | null
+    updatedAt: Date | null
+  }
+
+  export type CatalogSettingsMaxAggregateOutputType = {
+    id: number | null
+    updatedAt: Date | null
+  }
+
+  export type CatalogSettingsCountAggregateOutputType = {
+    id: number
+    speciesOptions: number
+    breedOptions: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CatalogSettingsAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type CatalogSettingsSumAggregateInputType = {
+    id?: true
+  }
+
+  export type CatalogSettingsMinAggregateInputType = {
+    id?: true
+    updatedAt?: true
+  }
+
+  export type CatalogSettingsMaxAggregateInputType = {
+    id?: true
+    updatedAt?: true
+  }
+
+  export type CatalogSettingsCountAggregateInputType = {
+    id?: true
+    speciesOptions?: true
+    breedOptions?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CatalogSettingsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CatalogSettings to aggregate.
+     */
+    where?: CatalogSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CatalogSettings to fetch.
+     */
+    orderBy?: CatalogSettingsOrderByWithRelationInput | CatalogSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CatalogSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CatalogSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CatalogSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CatalogSettings
+    **/
+    _count?: true | CatalogSettingsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CatalogSettingsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CatalogSettingsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CatalogSettingsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CatalogSettingsMaxAggregateInputType
+  }
+
+  export type GetCatalogSettingsAggregateType<T extends CatalogSettingsAggregateArgs> = {
+        [P in keyof T & keyof AggregateCatalogSettings]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCatalogSettings[P]>
+      : GetScalarType<T[P], AggregateCatalogSettings[P]>
+  }
+
+
+
+
+  export type CatalogSettingsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CatalogSettingsWhereInput
+    orderBy?: CatalogSettingsOrderByWithAggregationInput | CatalogSettingsOrderByWithAggregationInput[]
+    by: CatalogSettingsScalarFieldEnum[] | CatalogSettingsScalarFieldEnum
+    having?: CatalogSettingsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CatalogSettingsCountAggregateInputType | true
+    _avg?: CatalogSettingsAvgAggregateInputType
+    _sum?: CatalogSettingsSumAggregateInputType
+    _min?: CatalogSettingsMinAggregateInputType
+    _max?: CatalogSettingsMaxAggregateInputType
+  }
+
+  export type CatalogSettingsGroupByOutputType = {
+    id: number
+    speciesOptions: JsonValue
+    breedOptions: JsonValue
+    updatedAt: Date
+    _count: CatalogSettingsCountAggregateOutputType | null
+    _avg: CatalogSettingsAvgAggregateOutputType | null
+    _sum: CatalogSettingsSumAggregateOutputType | null
+    _min: CatalogSettingsMinAggregateOutputType | null
+    _max: CatalogSettingsMaxAggregateOutputType | null
+  }
+
+  type GetCatalogSettingsGroupByPayload<T extends CatalogSettingsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CatalogSettingsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CatalogSettingsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CatalogSettingsGroupByOutputType[P]>
+            : GetScalarType<T[P], CatalogSettingsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CatalogSettingsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    speciesOptions?: boolean
+    breedOptions?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["catalogSettings"]>
+
+  export type CatalogSettingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    speciesOptions?: boolean
+    breedOptions?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["catalogSettings"]>
+
+  export type CatalogSettingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    speciesOptions?: boolean
+    breedOptions?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["catalogSettings"]>
+
+  export type CatalogSettingsSelectScalar = {
+    id?: boolean
+    speciesOptions?: boolean
+    breedOptions?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CatalogSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "speciesOptions" | "breedOptions" | "updatedAt", ExtArgs["result"]["catalogSettings"]>
+
+  export type $CatalogSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CatalogSettings"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      speciesOptions: Prisma.JsonValue
+      breedOptions: Prisma.JsonValue
+      updatedAt: Date
+    }, ExtArgs["result"]["catalogSettings"]>
+    composites: {}
+  }
+
+  type CatalogSettingsGetPayload<S extends boolean | null | undefined | CatalogSettingsDefaultArgs> = $Result.GetResult<Prisma.$CatalogSettingsPayload, S>
+
+  type CatalogSettingsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CatalogSettingsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CatalogSettingsCountAggregateInputType | true
+    }
+
+  export interface CatalogSettingsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CatalogSettings'], meta: { name: 'CatalogSettings' } }
+    /**
+     * Find zero or one CatalogSettings that matches the filter.
+     * @param {CatalogSettingsFindUniqueArgs} args - Arguments to find a CatalogSettings
+     * @example
+     * // Get one CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CatalogSettingsFindUniqueArgs>(args: SelectSubset<T, CatalogSettingsFindUniqueArgs<ExtArgs>>): Prisma__CatalogSettingsClient<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CatalogSettings that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CatalogSettingsFindUniqueOrThrowArgs} args - Arguments to find a CatalogSettings
+     * @example
+     * // Get one CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CatalogSettingsFindUniqueOrThrowArgs>(args: SelectSubset<T, CatalogSettingsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CatalogSettingsClient<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CatalogSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CatalogSettingsFindFirstArgs} args - Arguments to find a CatalogSettings
+     * @example
+     * // Get one CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CatalogSettingsFindFirstArgs>(args?: SelectSubset<T, CatalogSettingsFindFirstArgs<ExtArgs>>): Prisma__CatalogSettingsClient<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CatalogSettings that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CatalogSettingsFindFirstOrThrowArgs} args - Arguments to find a CatalogSettings
+     * @example
+     * // Get one CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CatalogSettingsFindFirstOrThrowArgs>(args?: SelectSubset<T, CatalogSettingsFindFirstOrThrowArgs<ExtArgs>>): Prisma__CatalogSettingsClient<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CatalogSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CatalogSettingsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.findMany()
+     * 
+     * // Get first 10 CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const catalogSettingsWithIdOnly = await prisma.catalogSettings.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CatalogSettingsFindManyArgs>(args?: SelectSubset<T, CatalogSettingsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CatalogSettings.
+     * @param {CatalogSettingsCreateArgs} args - Arguments to create a CatalogSettings.
+     * @example
+     * // Create one CatalogSettings
+     * const CatalogSettings = await prisma.catalogSettings.create({
+     *   data: {
+     *     // ... data to create a CatalogSettings
+     *   }
+     * })
+     * 
+     */
+    create<T extends CatalogSettingsCreateArgs>(args: SelectSubset<T, CatalogSettingsCreateArgs<ExtArgs>>): Prisma__CatalogSettingsClient<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CatalogSettings.
+     * @param {CatalogSettingsCreateManyArgs} args - Arguments to create many CatalogSettings.
+     * @example
+     * // Create many CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CatalogSettingsCreateManyArgs>(args?: SelectSubset<T, CatalogSettingsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CatalogSettings and returns the data saved in the database.
+     * @param {CatalogSettingsCreateManyAndReturnArgs} args - Arguments to create many CatalogSettings.
+     * @example
+     * // Create many CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CatalogSettings and only return the `id`
+     * const catalogSettingsWithIdOnly = await prisma.catalogSettings.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CatalogSettingsCreateManyAndReturnArgs>(args?: SelectSubset<T, CatalogSettingsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CatalogSettings.
+     * @param {CatalogSettingsDeleteArgs} args - Arguments to delete one CatalogSettings.
+     * @example
+     * // Delete one CatalogSettings
+     * const CatalogSettings = await prisma.catalogSettings.delete({
+     *   where: {
+     *     // ... filter to delete one CatalogSettings
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CatalogSettingsDeleteArgs>(args: SelectSubset<T, CatalogSettingsDeleteArgs<ExtArgs>>): Prisma__CatalogSettingsClient<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CatalogSettings.
+     * @param {CatalogSettingsUpdateArgs} args - Arguments to update one CatalogSettings.
+     * @example
+     * // Update one CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CatalogSettingsUpdateArgs>(args: SelectSubset<T, CatalogSettingsUpdateArgs<ExtArgs>>): Prisma__CatalogSettingsClient<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CatalogSettings.
+     * @param {CatalogSettingsDeleteManyArgs} args - Arguments to filter CatalogSettings to delete.
+     * @example
+     * // Delete a few CatalogSettings
+     * const { count } = await prisma.catalogSettings.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CatalogSettingsDeleteManyArgs>(args?: SelectSubset<T, CatalogSettingsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CatalogSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CatalogSettingsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CatalogSettingsUpdateManyArgs>(args: SelectSubset<T, CatalogSettingsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CatalogSettings and returns the data updated in the database.
+     * @param {CatalogSettingsUpdateManyAndReturnArgs} args - Arguments to update many CatalogSettings.
+     * @example
+     * // Update many CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CatalogSettings and only return the `id`
+     * const catalogSettingsWithIdOnly = await prisma.catalogSettings.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CatalogSettingsUpdateManyAndReturnArgs>(args: SelectSubset<T, CatalogSettingsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CatalogSettings.
+     * @param {CatalogSettingsUpsertArgs} args - Arguments to update or create a CatalogSettings.
+     * @example
+     * // Update or create a CatalogSettings
+     * const catalogSettings = await prisma.catalogSettings.upsert({
+     *   create: {
+     *     // ... data to create a CatalogSettings
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CatalogSettings we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CatalogSettingsUpsertArgs>(args: SelectSubset<T, CatalogSettingsUpsertArgs<ExtArgs>>): Prisma__CatalogSettingsClient<$Result.GetResult<Prisma.$CatalogSettingsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CatalogSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CatalogSettingsCountArgs} args - Arguments to filter CatalogSettings to count.
+     * @example
+     * // Count the number of CatalogSettings
+     * const count = await prisma.catalogSettings.count({
+     *   where: {
+     *     // ... the filter for the CatalogSettings we want to count
+     *   }
+     * })
+    **/
+    count<T extends CatalogSettingsCountArgs>(
+      args?: Subset<T, CatalogSettingsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CatalogSettingsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CatalogSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CatalogSettingsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CatalogSettingsAggregateArgs>(args: Subset<T, CatalogSettingsAggregateArgs>): Prisma.PrismaPromise<GetCatalogSettingsAggregateType<T>>
+
+    /**
+     * Group by CatalogSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CatalogSettingsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CatalogSettingsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CatalogSettingsGroupByArgs['orderBy'] }
+        : { orderBy?: CatalogSettingsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CatalogSettingsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCatalogSettingsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CatalogSettings model
+   */
+  readonly fields: CatalogSettingsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CatalogSettings.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CatalogSettingsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CatalogSettings model
+   */
+  interface CatalogSettingsFieldRefs {
+    readonly id: FieldRef<"CatalogSettings", 'Int'>
+    readonly speciesOptions: FieldRef<"CatalogSettings", 'Json'>
+    readonly breedOptions: FieldRef<"CatalogSettings", 'Json'>
+    readonly updatedAt: FieldRef<"CatalogSettings", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CatalogSettings findUnique
+   */
+  export type CatalogSettingsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CatalogSettings to fetch.
+     */
+    where: CatalogSettingsWhereUniqueInput
+  }
+
+  /**
+   * CatalogSettings findUniqueOrThrow
+   */
+  export type CatalogSettingsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CatalogSettings to fetch.
+     */
+    where: CatalogSettingsWhereUniqueInput
+  }
+
+  /**
+   * CatalogSettings findFirst
+   */
+  export type CatalogSettingsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CatalogSettings to fetch.
+     */
+    where?: CatalogSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CatalogSettings to fetch.
+     */
+    orderBy?: CatalogSettingsOrderByWithRelationInput | CatalogSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CatalogSettings.
+     */
+    cursor?: CatalogSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CatalogSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CatalogSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CatalogSettings.
+     */
+    distinct?: CatalogSettingsScalarFieldEnum | CatalogSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * CatalogSettings findFirstOrThrow
+   */
+  export type CatalogSettingsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CatalogSettings to fetch.
+     */
+    where?: CatalogSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CatalogSettings to fetch.
+     */
+    orderBy?: CatalogSettingsOrderByWithRelationInput | CatalogSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CatalogSettings.
+     */
+    cursor?: CatalogSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CatalogSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CatalogSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CatalogSettings.
+     */
+    distinct?: CatalogSettingsScalarFieldEnum | CatalogSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * CatalogSettings findMany
+   */
+  export type CatalogSettingsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CatalogSettings to fetch.
+     */
+    where?: CatalogSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CatalogSettings to fetch.
+     */
+    orderBy?: CatalogSettingsOrderByWithRelationInput | CatalogSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CatalogSettings.
+     */
+    cursor?: CatalogSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CatalogSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CatalogSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CatalogSettings.
+     */
+    distinct?: CatalogSettingsScalarFieldEnum | CatalogSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * CatalogSettings create
+   */
+  export type CatalogSettingsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a CatalogSettings.
+     */
+    data: XOR<CatalogSettingsCreateInput, CatalogSettingsUncheckedCreateInput>
+  }
+
+  /**
+   * CatalogSettings createMany
+   */
+  export type CatalogSettingsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CatalogSettings.
+     */
+    data: CatalogSettingsCreateManyInput | CatalogSettingsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CatalogSettings createManyAndReturn
+   */
+  export type CatalogSettingsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * The data used to create many CatalogSettings.
+     */
+    data: CatalogSettingsCreateManyInput | CatalogSettingsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CatalogSettings update
+   */
+  export type CatalogSettingsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a CatalogSettings.
+     */
+    data: XOR<CatalogSettingsUpdateInput, CatalogSettingsUncheckedUpdateInput>
+    /**
+     * Choose, which CatalogSettings to update.
+     */
+    where: CatalogSettingsWhereUniqueInput
+  }
+
+  /**
+   * CatalogSettings updateMany
+   */
+  export type CatalogSettingsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CatalogSettings.
+     */
+    data: XOR<CatalogSettingsUpdateManyMutationInput, CatalogSettingsUncheckedUpdateManyInput>
+    /**
+     * Filter which CatalogSettings to update
+     */
+    where?: CatalogSettingsWhereInput
+    /**
+     * Limit how many CatalogSettings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CatalogSettings updateManyAndReturn
+   */
+  export type CatalogSettingsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * The data used to update CatalogSettings.
+     */
+    data: XOR<CatalogSettingsUpdateManyMutationInput, CatalogSettingsUncheckedUpdateManyInput>
+    /**
+     * Filter which CatalogSettings to update
+     */
+    where?: CatalogSettingsWhereInput
+    /**
+     * Limit how many CatalogSettings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CatalogSettings upsert
+   */
+  export type CatalogSettingsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the CatalogSettings to update in case it exists.
+     */
+    where: CatalogSettingsWhereUniqueInput
+    /**
+     * In case the CatalogSettings found by the `where` argument doesn't exist, create a new CatalogSettings with this data.
+     */
+    create: XOR<CatalogSettingsCreateInput, CatalogSettingsUncheckedCreateInput>
+    /**
+     * In case the CatalogSettings was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CatalogSettingsUpdateInput, CatalogSettingsUncheckedUpdateInput>
+  }
+
+  /**
+   * CatalogSettings delete
+   */
+  export type CatalogSettingsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+    /**
+     * Filter which CatalogSettings to delete.
+     */
+    where: CatalogSettingsWhereUniqueInput
+  }
+
+  /**
+   * CatalogSettings deleteMany
+   */
+  export type CatalogSettingsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CatalogSettings to delete
+     */
+    where?: CatalogSettingsWhereInput
+    /**
+     * Limit how many CatalogSettings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CatalogSettings without action
+   */
+  export type CatalogSettingsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CatalogSettings
+     */
+    select?: CatalogSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CatalogSettings
+     */
+    omit?: CatalogSettingsOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -4312,12 +5416,29 @@ export namespace Prisma {
   export type ShelterProfileScalarFieldEnum = (typeof ShelterProfileScalarFieldEnum)[keyof typeof ShelterProfileScalarFieldEnum]
 
 
+  export const CatalogSettingsScalarFieldEnum: {
+    id: 'id',
+    speciesOptions: 'speciesOptions',
+    breedOptions: 'breedOptions',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CatalogSettingsScalarFieldEnum = (typeof CatalogSettingsScalarFieldEnum)[keyof typeof CatalogSettingsScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const QueryMode: {
@@ -4334,6 +5455,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -4422,6 +5552,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -4648,6 +5792,55 @@ export namespace Prisma {
     telefono?: StringWithAggregatesFilter<"ShelterProfile"> | string
     direccion?: StringWithAggregatesFilter<"ShelterProfile"> | string
     updatedAt?: DateTimeWithAggregatesFilter<"ShelterProfile"> | Date | string
+  }
+
+  export type CatalogSettingsWhereInput = {
+    AND?: CatalogSettingsWhereInput | CatalogSettingsWhereInput[]
+    OR?: CatalogSettingsWhereInput[]
+    NOT?: CatalogSettingsWhereInput | CatalogSettingsWhereInput[]
+    id?: IntFilter<"CatalogSettings"> | number
+    speciesOptions?: JsonFilter<"CatalogSettings">
+    breedOptions?: JsonFilter<"CatalogSettings">
+    updatedAt?: DateTimeFilter<"CatalogSettings"> | Date | string
+  }
+
+  export type CatalogSettingsOrderByWithRelationInput = {
+    id?: SortOrder
+    speciesOptions?: SortOrder
+    breedOptions?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CatalogSettingsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: CatalogSettingsWhereInput | CatalogSettingsWhereInput[]
+    OR?: CatalogSettingsWhereInput[]
+    NOT?: CatalogSettingsWhereInput | CatalogSettingsWhereInput[]
+    speciesOptions?: JsonFilter<"CatalogSettings">
+    breedOptions?: JsonFilter<"CatalogSettings">
+    updatedAt?: DateTimeFilter<"CatalogSettings"> | Date | string
+  }, "id">
+
+  export type CatalogSettingsOrderByWithAggregationInput = {
+    id?: SortOrder
+    speciesOptions?: SortOrder
+    breedOptions?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CatalogSettingsCountOrderByAggregateInput
+    _avg?: CatalogSettingsAvgOrderByAggregateInput
+    _max?: CatalogSettingsMaxOrderByAggregateInput
+    _min?: CatalogSettingsMinOrderByAggregateInput
+    _sum?: CatalogSettingsSumOrderByAggregateInput
+  }
+
+  export type CatalogSettingsScalarWhereWithAggregatesInput = {
+    AND?: CatalogSettingsScalarWhereWithAggregatesInput | CatalogSettingsScalarWhereWithAggregatesInput[]
+    OR?: CatalogSettingsScalarWhereWithAggregatesInput[]
+    NOT?: CatalogSettingsScalarWhereWithAggregatesInput | CatalogSettingsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"CatalogSettings"> | number
+    speciesOptions?: JsonWithAggregatesFilter<"CatalogSettings">
+    breedOptions?: JsonWithAggregatesFilter<"CatalogSettings">
+    updatedAt?: DateTimeWithAggregatesFilter<"CatalogSettings"> | Date | string
   }
 
   export type PetCreateInput = {
@@ -4885,6 +6078,55 @@ export namespace Prisma {
     nombre?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     direccion?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CatalogSettingsCreateInput = {
+    id?: number
+    speciesOptions: JsonNullValueInput | InputJsonValue
+    breedOptions: JsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+  }
+
+  export type CatalogSettingsUncheckedCreateInput = {
+    id?: number
+    speciesOptions: JsonNullValueInput | InputJsonValue
+    breedOptions: JsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+  }
+
+  export type CatalogSettingsUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    speciesOptions?: JsonNullValueInput | InputJsonValue
+    breedOptions?: JsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CatalogSettingsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    speciesOptions?: JsonNullValueInput | InputJsonValue
+    breedOptions?: JsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CatalogSettingsCreateManyInput = {
+    id?: number
+    speciesOptions: JsonNullValueInput | InputJsonValue
+    breedOptions: JsonNullValueInput | InputJsonValue
+    updatedAt?: Date | string
+  }
+
+  export type CatalogSettingsUpdateManyMutationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    speciesOptions?: JsonNullValueInput | InputJsonValue
+    breedOptions?: JsonNullValueInput | InputJsonValue
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CatalogSettingsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    speciesOptions?: JsonNullValueInput | InputJsonValue
+    breedOptions?: JsonNullValueInput | InputJsonValue
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -5171,6 +6413,80 @@ export namespace Prisma {
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
   }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type CatalogSettingsCountOrderByAggregateInput = {
+    id?: SortOrder
+    speciesOptions?: SortOrder
+    breedOptions?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CatalogSettingsAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type CatalogSettingsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CatalogSettingsMinOrderByAggregateInput = {
+    id?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CatalogSettingsSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
 
   export type StringFieldUpdateOperationsInput = {
     set?: string
@@ -5389,6 +6705,29 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
 

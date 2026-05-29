@@ -4,6 +4,8 @@ import "dotenv/config";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma";
+import { DEFAULT_BREED_OPTIONS } from "../src/utils/breedOptions";
+import { DEFAULT_SPECIES_OPTIONS } from "../src/utils/speciesOptions";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -18,6 +20,7 @@ async function main() {
     // 1. Limpiar datos existentes para evitar duplicados
     await prisma.pet.deleteMany({});
     await prisma.shelterProfile.deleteMany({});
+    await prisma.catalogSettings.deleteMany({});
 
     // 2. Insertar las mascotas en la tabla Pet
     const petsResult = await prisma.pet.createMany({
@@ -36,6 +39,15 @@ async function main() {
       }
     });
     console.info("⚙️ Configuración inicial del refugio insertada.");
+
+    await prisma.catalogSettings.create({
+      data: {
+        id: 1,
+        speciesOptions: DEFAULT_SPECIES_OPTIONS as unknown as never,
+        breedOptions: DEFAULT_BREED_OPTIONS as unknown as never,
+      }
+    });
+    console.info("📚 Catálogos iniciales insertados.");
 
   } catch (error) {
     console.error("❌ El Seed falló:", error);

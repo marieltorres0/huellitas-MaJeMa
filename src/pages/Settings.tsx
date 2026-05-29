@@ -9,10 +9,9 @@ import { DEFAULT_BREED_OPTIONS } from '../utils/breedOptions'
 export default function Settings() {
   const profile = useSettingsStore((state) => state.profile)
   const setProfile = useSettingsStore((state) => state.setProfile)
-  const setSpeciesOptions = useSettingsStore((state) => state.setSpeciesOptions)
-  const setBreedOptions = useSettingsStore((state) => state.setBreedOptions)
   const speciesOptions = useSettingsStore((state) => state.speciesOptions)
   const breedOptions = useSettingsStore((state) => state.breedOptions)
+  const saveCatalogs = useSettingsStore((state) => state.saveCatalogs)
   const userRole = useAuthStore((state) => state.user?.role ?? 'normal')
   const isAdmin = userRole === 'admin'
   const [notifications, setNotifications] = useState(true)
@@ -330,11 +329,14 @@ export default function Settings() {
         <div className="flex justify-end">
           <button
             type="button"
-            onClick={() => {
-              setProfile(formData)
-              setSpeciesOptions(speciesDraft)
-                setBreedOptions(breedDraft)
-              toast.success('¡Configuración guardada con éxito!')
+            onClick={async () => {
+              try {
+                setProfile(formData)
+                await saveCatalogs({ speciesOptions: speciesDraft, breedOptions: breedDraft })
+                toast.success('¡Configuración guardada con éxito!')
+              } catch (error) {
+                toast.error(error instanceof Error ? error.message : 'No se pudieron guardar los catálogos')
+              }
             }}
             disabled={!hasChanges}
             className="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:shadow-blue-950/40 dark:bg-blue-500 dark:hover:bg-blue-400"

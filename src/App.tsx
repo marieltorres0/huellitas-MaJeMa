@@ -27,6 +27,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
 	const isDarkMode = useSettingsStore((state) => state.isDarkMode)
 	const loadPets = usePetStore((state) => state.loadPets)
+	const loadCatalogs = useSettingsStore((state) => state.loadCatalogs)
 
 	useEffect(() => {
 		document.documentElement.classList.toggle('dark', isDarkMode)
@@ -35,6 +36,10 @@ export default function App() {
 	useEffect(() => {
 		void loadPets().catch(() => undefined)
 	}, [loadPets])
+
+	useEffect(() => {
+		void loadCatalogs().catch(() => undefined)
+	}, [loadCatalogs])
 
 	return (
 		<BrowserRouter>

@@ -351,9 +351,11 @@ export default function Dashboard() {
     setDraggedPet(pet ?? null)
   }
 
+  const canDeletePet = (pet: Pet) => pet.adoptionStatus !== 'EN_PROCESO'
+
   const requestDeletePet = (pet: Pet) => {
-    if (pet.adoptionStatus !== 'ADOPTADO') {
-      toast.error('Solo se pueden eliminar mascotas adoptadas')
+    if (!canDeletePet(pet)) {
+      toast.error('Solo se pueden eliminar mascotas disponibles o adoptadas')
       return
     }
 
@@ -361,9 +363,9 @@ export default function Dashboard() {
   }
 
   const confirmDeletePet = async () => {
-    if (!petToDelete || petToDelete.adoptionStatus !== 'ADOPTADO') {
+    if (!petToDelete || !canDeletePet(petToDelete)) {
       closeDeleteModal()
-      toast.error('Solo se pueden eliminar mascotas adoptadas')
+      toast.error('Solo se pueden eliminar mascotas disponibles o adoptadas')
       return
     }
 
@@ -594,7 +596,7 @@ export default function Dashboard() {
                                     Editar
                                   </button>
 
-                                  {user?.role === 'admin' && pet.adoptionStatus === 'ADOPTADO' && (
+                                  {user?.role === 'admin' && canDeletePet(pet) && (
                                     <button
                                       type="button"
                                       onClick={() => requestDeletePet(pet)}
